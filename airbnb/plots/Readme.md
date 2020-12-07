@@ -755,7 +755,7 @@ plt.show()
 ```
 
 
-![png](output_19_0.png)
+![png](conversion_over_time.png)
 
 
 # Conversion rates over time
@@ -808,7 +808,7 @@ plt.show()
 ```
 
 
-![png](output_21_0.png)
+![png](conversion_rates_over_time.png)
 
 
 # Conversion rate by Room type
@@ -1250,7 +1250,7 @@ plt.show()
 ```
 
 
-![png](output_37_0.png)
+![png](new_vs_returning_over_time.png)
 
 
 # Conversion rates by user types
@@ -1337,7 +1337,7 @@ plt.show()
 ```
 
 
-![png](output_40_0.png)
+![png](conversion_by_user_types.png)
 
 
 
