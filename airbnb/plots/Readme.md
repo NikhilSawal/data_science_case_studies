@@ -559,7 +559,7 @@ fig.savefig(image_path + 'plots/listings.png')
 ```
 
 
-![png](output_11_0.png)
+![png](listings.png)
 
 
 # Time between different stages of communication
@@ -616,9 +616,9 @@ checkins_df['is_booking_at'] = checkins_df['ts_booking_at'].isna()
 
 
 def get_final_df(input_df):
-    
+
     month_grp = input_df.groupby(['month_yr'])
-    
+
     # Make dataframes
     df_1 = pd.DataFrame(month_grp['is_interaction_first'].value_counts())
     df_2 = pd.DataFrame(month_grp['is_reply_at_first'].value_counts())
@@ -637,36 +637,36 @@ def get_final_df(input_df):
     df_3.reset_index(inplace=True)
     df_4.reset_index(inplace=True)
 
-    merged_counts_df = pd.merge(df_4, df_3, how = 'left', 
+    merged_counts_df = pd.merge(df_4, df_3, how = 'left',
                                 left_on = ['month_yr', 'is_booking_at'],
                                 right_on = ['month_yr', 'is_accepted_at_first'])
 
-    merged_counts_df_1 = pd.merge(df_2, df_1, how = 'left', 
+    merged_counts_df_1 = pd.merge(df_2, df_1, how = 'left',
                                   left_on = ['month_yr', 'is_reply_at_first'],
                                   right_on = ['month_yr', 'is_interaction_first'])
 
     merged_counts_df_1['is_interaction_first'].fillna(value=True, inplace=True)
     merged_counts_df_1['count_interaction_first'].fillna(0, inplace=True)
 
-    final_merged_counts_df = pd.merge(merged_counts_df, merged_counts_df_1, 
+    final_merged_counts_df = pd.merge(merged_counts_df, merged_counts_df_1,
                                       how = 'left',
                                       left_on = ['month_yr', 'is_booking_at'],
                                       right_on = ['month_yr', 'is_reply_at_first'])
 
-    final_merged_counts_df = final_merged_counts_df.drop(['is_accepted_at_first', 
+    final_merged_counts_df = final_merged_counts_df.drop(['is_accepted_at_first',
                                                           'is_reply_at_first',
-                                                          'is_interaction_first'], 
-                                                          axis = 1) 
+                                                          'is_interaction_first'],
+                                                          axis = 1)
 
     bookings_df = final_merged_counts_df[final_merged_counts_df['is_booking_at']==False]
     churn_df = final_merged_counts_df[final_merged_counts_df['is_booking_at']==True]
 
-    bookings_df.columns = ['month_yr', 'is_booking_at', 'booking(#)', 
-                        'interaction_accepted(#)', 'interaction_reply(#)', 
+    bookings_df.columns = ['month_yr', 'is_booking_at', 'booking(#)',
+                        'interaction_accepted(#)', 'interaction_reply(#)',
                         'interaction_started(#)']
 
-    churn_df.columns = ['month_yr', 'is_booking_at', 'churned_at_booking(#)', 
-                        'interaction_rejected(#)', 'no_reply(#)', 
+    churn_df.columns = ['month_yr', 'is_booking_at', 'churned_at_booking(#)',
+                        'interaction_rejected(#)', 'no_reply(#)',
                         'interaction_started(#)']
 
     bookings_df = bookings_df.drop(['is_booking_at'], axis=1)
@@ -674,11 +674,11 @@ def get_final_df(input_df):
 
     bookings_df['interaction_started(#)'] = [i for i in bookings_df['interaction_started(#)'].apply(lambda x: int(x))]
     final_df = pd.merge(bookings_df, churn_df.iloc[:,:2], how = 'left', on = 'month_yr')
-    
+
     final_df['reply_rate(%)'] = round(final_df['interaction_reply(#)'] / final_df['interaction_started(#)'] * 100, 2)
     final_df['booking_rate(%)'] = round(final_df['booking(#)'] / final_df['interaction_started(#)'] * 100, 2)
     final_df['abandonment_rate(%)'] = round(final_df['churned_at_booking(#)'] / final_df['interaction_started(#)'] * 100, 2)
-    
+
     return final_df
 ```
 
@@ -699,32 +699,32 @@ fig.set_figheight(20)
 fig.set_figwidth(30)
 
 # plt.style.use("fivethirtyeight")
-rects1 = ax.bar(x_indexes, 
-         final_df['interaction_started(#)'], 
+rects1 = ax.bar(x_indexes,
+         final_df['interaction_started(#)'],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Total first interaction over time")
-rects2 = ax.bar(x_indexes + 0.15, 
+rects2 = ax.bar(x_indexes + 0.15,
          final_df['interaction_reply(#)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Total replys over time")
-rects3 = ax.bar(x_indexes + 0.3, 
+rects3 = ax.bar(x_indexes + 0.3,
          final_df['interaction_accepted(#)'],
          width=width,
-         color="#484848", 
+         color="#484848",
          label="Total accepted requests over time")
-rects4 = ax.bar(x_indexes + 0.45, 
+rects4 = ax.bar(x_indexes + 0.45,
          final_df['booking(#)'],
          width=width,
-         color="#767676", 
+         color="#767676",
          label="Total Bookings over time")
-rects5 = ax.bar(x_indexes + 0.6, 
+rects5 = ax.bar(x_indexes + 0.6,
          final_df['churned_at_booking(#)'],
          width=width,
-         color="#FC642D", 
+         color="#FC642D",
          label="Total Bookings churned over time")
-plt.legend(("Total first interaction over time", "Total replys over time", 
+plt.legend(("Total first interaction over time", "Total replys over time",
             "Total accepted requests over time", "Total Bookings over time",
             "Total Bookings churned over time"), fontsize=20)
 plt.xticks(ticks=x_indexes + 2.00*width, labels=x, fontsize=30)
@@ -773,15 +773,15 @@ fig, ax = plt.subplots()
 fig.set_figheight(20)
 fig.set_figwidth(30)
 ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f%%'))
-rects1 = ax.bar(x_indexes + 0.25, 
+rects1 = ax.bar(x_indexes + 0.25,
          final_df['abandonment_rate(%)'],
          width=width,
-         color="#484848", 
+         color="#484848",
          label="Abandonment Rate (%)")
-rects2 = ax.bar(x_indexes + 0.5, 
+rects2 = ax.bar(x_indexes + 0.5,
          final_df['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 plt.legend(("Abandonment Rate (%)", "Conversion Rate (%)"), fontsize=25)
 plt.xticks(ticks=x_indexes + 1.5*width, labels=x, fontsize=20)
@@ -845,15 +845,15 @@ top_ax, middle_ax, bottom_ax = ax
 # Private Room #
 ################
 
-top_ax.bar(x_indexes + 0.00, 
+top_ax.bar(x_indexes + 0.00,
          checkins_df_private_room['abandonment_rate(%)'],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Abandonment Rate (%)")
-top_ax.bar(x_indexes + 0.20, 
+top_ax.bar(x_indexes + 0.20,
          checkins_df_private_room['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 # plt.xticks(ticks=x_indexes + 0.5*width, labels=x, fontsize=20)
@@ -869,15 +869,15 @@ top_ax.set_yticklabels(y_indexes, fontsize = 30)
 # Entire Apartment #
 ####################
 
-middle_ax.bar(x_indexes + 0.00, 
+middle_ax.bar(x_indexes + 0.00,
          checkins_df_entire_apt['abandonment_rate(%)'],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Abandonment Rate (%)")
-middle_ax.bar(x_indexes + 0.20, 
+middle_ax.bar(x_indexes + 0.20,
          checkins_df_entire_apt['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 middle_ax.legend(fontsize=30, loc='upper right')
@@ -892,15 +892,15 @@ middle_ax.set_title('(Entire Apartment)', fontsize=30)
 ###############
 
 bottom_ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f%%'))
-bottom_ax.bar(x_indexes + 0.00, 
+bottom_ax.bar(x_indexes + 0.00,
          checkins_df_shared_room['abandonment_rate(%)'],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Abandonment Rate (%)")
-bottom_ax.bar(x_indexes + 0.20, 
+bottom_ax.bar(x_indexes + 0.20,
          checkins_df_shared_room['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 bottom_ax.legend(fontsize=30, loc='upper right')
@@ -911,7 +911,7 @@ bottom_ax.set_yticklabels(y_indexes, fontsize=30)
 bottom_ax.set_title('(Shared Room)', fontsize=30)
 
 fig.text(0.5, 0.01, 'Month-Yr', ha='center', fontsize=40)
-fig.text(0.03, 0.5, 'As Percentage of Interaction Started (%)', 
+fig.text(0.03, 0.5, 'As Percentage of Interaction Started (%)',
          va='center', rotation='vertical', fontsize=40)
 
 plt.suptitle("Overall conversion/abandonment rate - Apartment Type", fontsize=50, ha='center')
@@ -920,7 +920,7 @@ plt.show()
 fig.savefig(image_path + 'plots/conversion_by_room_type.png')
 
 # 1. Shared rooms are more likely to be abandoned over time. Typically shared
-# rooms are not favourites with families. So based on this analysis we might 
+# rooms are not favourites with families. So based on this analysis we might
 # want to look into our targeting strategies for shared rooms.
 
 # 2. Also, the abandonment in the month of January is consistantly high. So
@@ -928,7 +928,7 @@ fig.savefig(image_path + 'plots/conversion_by_room_type.png')
 ```
 
 
-![png](output_24_0.png)
+![png](conversion_by_room_type.png)
 
 
 # Distribution of length of first message
@@ -960,7 +960,7 @@ plt.savefig(image_path + 'plots/first_inter_length_dist.png')
 ```
 
 
-![png](output_26_0.png)
+![png](first_inter_length_dist.png)
 
 
 # Distribution of number of interactions
@@ -992,7 +992,7 @@ plt.savefig(image_path + 'plots/count_interaction_dist.png')
 ```
 
 
-![png](output_28_0.png)
+![png](count_interaction_dist.png)
 
 
 # Conversion rate by Contact Channels
@@ -1027,15 +1027,15 @@ top_ax, bottom_ax = ax
 # Book It #
 ###########
 
-top_ax.bar(x_indexes + 0.00, 
+top_ax.bar(x_indexes + 0.00,
          checkins_df_book_it['abandonment_rate(%)'],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Abandonment Rate (%)")
-top_ax.bar(x_indexes + 0.20, 
+top_ax.bar(x_indexes + 0.20,
          checkins_df_book_it['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 # plt.xticks(ticks=x_indexes + 0.5*width, labels=x, fontsize=20)
@@ -1051,15 +1051,15 @@ top_ax.set_yticklabels(y_indexes, fontsize = 30)
 # Contact Me #
 ##############
 
-bottom_ax.bar(x_indexes + 0.00, 
+bottom_ax.bar(x_indexes + 0.00,
          checkins_df_contact_me['abandonment_rate(%)'],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Abandonment Rate (%)")
-bottom_ax.bar(x_indexes + 0.20, 
+bottom_ax.bar(x_indexes + 0.20,
          checkins_df_contact_me['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 bottom_ax.set_xticks(ticks=x_indexes + 0.5*width)
@@ -1070,7 +1070,7 @@ bottom_ax.set_title('(Contact me)', fontsize=30)
 bottom_ax.legend(fontsize=30, loc='upper right')
 
 fig.text(0.5, 0.01, 'Month-Yr', ha='center', fontsize=40)
-fig.text(0.03, 0.5, 'As percentage of number of interaction started (%)', 
+fig.text(0.03, 0.5, 'As percentage of number of interaction started (%)',
          va='center', rotation='vertical', fontsize=40)
 
 plt.suptitle("Conversion/abandonment rate - Contact channel", fontsize=50, ha='center')
@@ -1081,7 +1081,7 @@ fig.savefig(image_path + 'plots/contact_channel_aban_conv_rate.png')
 ```
 
 
-![png](output_31_0.png)
+![png](contact_channel_aban_conv_rate.png)
 
 
 # Dataframe for Time between interactions by User type
@@ -1108,7 +1108,7 @@ acceptance_to_booking = pd.DataFrame(buyers_grp['acceptance_to_booking'].mean())
 acceptance_to_booking.columns = ['acceptance_to_booking']
 acceptance_to_booking.reset_index(inplace=True)
 
-contact_me_final_df = pd.concat([start_to_finish, interaction_to_reply, 
+contact_me_final_df = pd.concat([start_to_finish, interaction_to_reply,
                                  reply_to_acceptance, acceptance_to_booking], axis='columns').iloc[1:,[0,1,3,5,7]]
 
 # Book It
@@ -1131,7 +1131,7 @@ acceptance_to_booking = pd.DataFrame(buyers_grp['acceptance_to_booking'].mean())
 acceptance_to_booking.columns = ['acceptance_to_booking']
 acceptance_to_booking.reset_index(inplace=True)
 
-book_it_final_df = pd.concat([start_to_finish, interaction_to_reply, 
+book_it_final_df = pd.concat([start_to_finish, interaction_to_reply,
                                  reply_to_acceptance, acceptance_to_booking], axis='columns').iloc[1:,[0,1,3,5,7]]
 
 final_df = pd.concat([contact_me_final_df, book_it_final_df], axis='rows')
@@ -1162,15 +1162,15 @@ top_ax, bottom_ax = ax
 # New Bookers #
 ###############
 
-top_ax.bar(x_indexes + 0.00, 
+top_ax.bar(x_indexes + 0.00,
          new_booker[new_booker['contact_channel']=='contact_me'].values.tolist()[0][:4],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Contact me")
-top_ax.bar(x_indexes + 0.20, 
+top_ax.bar(x_indexes + 0.20,
          new_booker[new_booker['contact_channel']=='book_it'].values.tolist()[0][:4],
          width=width,
-         color="#767676", 
+         color="#767676",
          label="Book it")
 
 # plt.xticks(ticks=x_indexes + 0.5*width, labels=x, fontsize=20)
@@ -1186,15 +1186,15 @@ top_ax.set_yticklabels(y_indexes, fontsize = 30)
 # Past Bookers #
 ################
 
-bottom_ax.bar(x_indexes + 0.00, 
+bottom_ax.bar(x_indexes + 0.00,
          past_booker[past_booker['contact_channel']=='contact_me'].values.tolist()[0][:4],
          width=width,
-         color="#FF5A5F", 
+         color="#FF5A5F",
          label="Contact me")
-bottom_ax.bar(x_indexes + 0.20, 
+bottom_ax.bar(x_indexes + 0.20,
          past_booker[past_booker['contact_channel']=='book_it'].values.tolist()[0][:4],
          width=width,
-         color="#767676", 
+         color="#767676",
          label="Book it")
 
 bottom_ax.set_xticks(ticks=x_indexes + 0.5*width)
@@ -1206,7 +1206,7 @@ bottom_ax.legend(fontsize=30, loc='upper right')
 
 
 fig.text(0.5, 0.01, 'Interaction Phases', ha='center', fontsize=40)
-fig.text(0.03, 0.5, 'Average time between interactions (in Hrs)', 
+fig.text(0.03, 0.5, 'Average time between interactions (in Hrs)',
          va='center', rotation='vertical', fontsize=40)
 
 plt.suptitle("Time spent in between 'Contact Me' interactions", fontsize=50, ha='center')
@@ -1217,7 +1217,7 @@ fig.savefig(image_path + 'plots/time_spent_contact_me.png')
 ```
 
 
-![png](output_35_0.png)
+![png](time_spent_contact_me.png)
 
 
 # New vs Returning users over time
@@ -1228,7 +1228,7 @@ month_grp = checkins_df.groupby(['month_yr'])
 new_returning = pd.DataFrame(month_grp['guest_user_stage_first'].value_counts())
 new_returning.columns = ['count_listings']
 new_returning.reset_index(inplace=True)
-new_returning = new_returning.pivot_table(index='month_yr', 
+new_returning = new_returning.pivot_table(index='month_yr',
                           columns='guest_user_stage_first',
                           values='count_listings')
 new_returning.reset_index(inplace=True)
@@ -1282,15 +1282,15 @@ top_ax, bottom_ax = ax
 # New Bookers #
 ###############
 
-top_ax.bar(x_indexes + 0.00, 
+top_ax.bar(x_indexes + 0.00,
          checkins_df_new_booker['abandonment_rate(%)'],
          width=width,
-         color="#484848", 
+         color="#484848",
          label="Abandonment Rate (%)")
-top_ax.bar(x_indexes + 0.20, 
+top_ax.bar(x_indexes + 0.20,
          checkins_df_new_booker['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 # plt.xticks(ticks=x_indexes + 0.5*width, labels=x, fontsize=20)
@@ -1306,15 +1306,15 @@ top_ax.set_yticklabels(y_indexes, fontsize = 30)
 # Returning Bookers #
 #####################
 
-bottom_ax.bar(x_indexes + 0.00, 
+bottom_ax.bar(x_indexes + 0.00,
          checkins_df_past_booker['abandonment_rate(%)'],
          width=width,
-         color="#484848", 
+         color="#484848",
          label="Abandonment Rate (%)")
-bottom_ax.bar(x_indexes + 0.20, 
+bottom_ax.bar(x_indexes + 0.20,
          checkins_df_past_booker['booking_rate(%)'],
          width=width,
-         color="#00A699", 
+         color="#00A699",
          label="Booking Rate (%)")
 
 bottom_ax.set_xticks(ticks=x_indexes + 0.5*width)
@@ -1324,7 +1324,7 @@ bottom_ax.set_yticklabels(y_indexes, fontsize = 30)
 bottom_ax.set_title('(Returning Bookers)', fontsize=30)
 
 fig.text(0.5, 0.01, 'Month-Yr', ha='center', fontsize=40)
-fig.text(0.03, 0.5, 'As Percentage of Interaction Started (%)', 
+fig.text(0.03, 0.5, 'As Percentage of Interaction Started (%)',
          va='center', rotation='vertical', fontsize=40)
 
 plt.suptitle("Overall conversion/abandonment rate - Guest Type", fontsize=50, ha='center')
@@ -1333,7 +1333,7 @@ plt.show()
 
 
 # Since booking rate for Returning buyers is better than abandonment rate
-# we are doing a good job with the targeting. 
+# we are doing a good job with the targeting.
 ```
 
 
@@ -1342,23 +1342,23 @@ plt.show()
 
 
 ```python
-# 1. What key metrics would you propose to monitor over time the success 
-# of the team's efforts in improving the guest host matching process and 
+# 1. What key metrics would you propose to monitor over time the success
+# of the team's efforts in improving the guest host matching process and
 # why? Clearly define your metric(s) and explain how each is computed.
 
 ## Key Metrics
 #  1.0 % Conversion
-#    1.1 
+#    1.1
 
 ```
 
 
 ```python
 # 2. What areas should we invest in to increase the number of successful
-# bookings in Rio de Janeiro? What segments are doing well and what could 
-# be improved? Propose 2-3 specific recommendations (business initiatives 
+# bookings in Rio de Janeiro? What segments are doing well and what could
+# be improved? Propose 2-3 specific recommendations (business initiatives
 # and product changes) that could address these opportunities. Demonstrate
-# rationale behind each recommendation AND prioritize your recommendations 
+# rationale behind each recommendation AND prioritize your recommendations
 # in order of their estimated impact.
 
 
@@ -1366,10 +1366,10 @@ plt.show()
 
 
 ```python
-# 3. There is also interest from executives at Airbnb about the work you 
-# are doing, and a desire to understand the broader framing of the challenge 
-# of matching supply and demand, thinking beyond the data provided. What 
-# other research, experiments, or approaches could help the company get 
+# 3. There is also interest from executives at Airbnb about the work you
+# are doing, and a desire to understand the broader framing of the challenge
+# of matching supply and demand, thinking beyond the data provided. What
+# other research, experiments, or approaches could help the company get
 # more clarity on the problem?
 
 
