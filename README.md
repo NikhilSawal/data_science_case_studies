@@ -35,6 +35,9 @@ The product and operations team at Airbnb wants a detailed analysis of their gue
 ![img_1](plots/airbnb/conversion_over_time.png)
 
 The following distributions plots provide further evidence to come up with measures to improve engagement.
+1. To make a good first impression, the opening message should have no more than ~180 characters.
+
+2. Also all the successful bookings have shown little over 10 interactions.
 
 ![img_1](plots/airbnb/first_inter_length_dist.png)
 
