@@ -1,10 +1,10 @@
 # Buildzoom - [Machine Learning Model](https://github.com/NikhilSawal/data_science_case_studies/blob/master/buildzoom/solution.ipynb)
 
-## Problem Statement
+## 1. Problem Statement
 
 Buildzoom gets data on building permits and wants to build a classifier that can correctly identify of the permit. The permit maybe of several types, but Buildzoom, wants a binary classification that can identify if a permit is ```(ELECTRICAL/NON-ELECTRICAL).```
 
-## Input Data
+## 2. Input Data
 | Data Column | Description |
 | ----------- | ----------- |
 | License Type | Types of license associated with the property (Electrical contractor license, Speciality contractor license) |
@@ -14,6 +14,8 @@ Buildzoom gets data on building permits and wants to build a classifier that can
 | Type (y) | ELECTRICAL/NON-ELECTRICAL |
 | Subtype | Commercial/Single Family |
 | Job Value | Value associated with the job |
+
+## 3. Exploratory Data Analysis (EDA)
 
 ```python
 import pandas as pd
