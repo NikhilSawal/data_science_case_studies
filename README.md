@@ -1,15 +1,16 @@
 # Case Studies
+
 ## 1. Airbnb - [Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/airbnb/plots)
 
-### Problem
+### 1.1 Problem
 The product and operations team at Airbnb wants a detailed analysis of their guest host matching system in an attempt to grow bookings at Rio. The team wants to
 1. Track a few KPI's that would help them monitor the success of the teams efforts in improving guest host matching.
 
 2. Gain a deeper understanding of what areas to invest. Come up with a few recommendations, business initiative and product changes and demonstrate the rationale behind the recommendations.
 
-### Analysis
+### 1.2 Analysis
 
-#### 1. KPI's
+#### 1.2.1 KPI's
 
 1. Conversion rate (%)
 
@@ -26,7 +27,7 @@ The product and operations team at Airbnb wants a detailed analysis of their gue
 
 3. \# Interactions and # Characters in guests opening remark (Bookings vs. Abandoned)
 
-#### 2. Recommendations
+#### 1.2.2 Recommendations
 
 1. **Make suggestions to keep the interactions engaging**
 
@@ -62,7 +63,7 @@ Digging a bit deeper, the following plot shows the time spent in number of hours
 
 
 
-### 2.1. Problem Statement
+### 2.1 Problem Statement
 
 Buildzoom gets data on building permits and wants to build a classifier that can correctly identify of the permit. The permit maybe of several types, but Buildzoom, wants a **binary classification** that can identify if a permit is ```(ELECTRICAL/NON-ELECTRICAL).```
 
