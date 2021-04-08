@@ -1,5 +1,7 @@
+# 1. Import libraries
+
+
 ```python
-# Import libraries
 import re
 import nltk
 
@@ -26,119 +28,101 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.max_rows', 50000)
 ```
 
+# 2. Import data
+
 
 ```python
-# Import data
 df = pd.read_csv('data/dataset.csv')
 ```
 
-
-```python
-df['emp_title'].unique()
-```
-
-
-
-
-    array(['Time Warner Cable', 'Ottawa University', 'Kennedy Wilson', ...,
-           'Weichert, Realtors', 'meadwestvaco', 'Rehab Alliance'],
-          dtype=object)
-
-
-
-
-```python
-# Employer Title
-```
+# 3. Employer Title
 
 
 ```python
 def emp_title(data, pattern, category_name):
     """
-    Find patterns and return a list with the common category name for different patterns.
-    For eg: If 'Walmart' appears in the following formats ('walmart', 'Wal-Mart', 'Walmart')
+    Find patterns and return a list with the common category name for 
+    different patterns. For eg: If 'Walmart' appears in the following 
+    formats ('walmart', 'Wal-Mart', 'Walmart') it will be set to Walmart.
     """
     unique_names = data['emp_title'].unique() 
     matches = [pattern.findall(i) for i in unique_names if len(pattern.findall(i)) > 0]
     matches = [item for l in matches for item in l]
     return [category_name if i in matches else i for i in data['emp_title']]
-    
 
 
 def emp_title_patterns(data, col_name):
     """
-    Identify and apply patterns of most common employer title and replace the remaining with Others!!
+    This function applies manually identified patterns of most common 
+    employer title and replace the remaining with Others!!
     """
-    
-    # Fill NA
-#     data[col_name] = data[col_name].fillna('None')
     
     # US Army
     pattern = re.compile(r'[a-zA-Z\S]*^[uU][a-zA-Z\s\S]+[Aa][Rr][Mm][Yy][a-zA-Z\S]*')
-    data[col_name] = emp_title(data, pattern, 'U.S. Army')
+    data.loc[:,col_name] = emp_title(data, pattern, 'U.S. Army')
 
     # US Navy
     pattern = re.compile(r'^[uU][a-zA-Z\s\S]+[Nn][Aa][Vv][Yy][a-zA-Z\S]*')
-    data[col_name] = emp_title(data, pattern, 'U.S. Navy')
+    data.loc[:,col_name] = emp_title(data, pattern, 'U.S. Navy')
 
     # Walmart
     pattern = re.compile(r'^[Ww][Aa][a-zA-Z\S]+[tT]$[a-zA-Z\S]*')
-    data[col_name] = emp_title(data, pattern, 'Walmart')
+    data.loc[:,col_name] = emp_title(data, pattern, 'Walmart')
 
     # Banks
     pattern = re.compile(r'[a-zA-Z\S\s]*[Bb][Aa][Nn][Kk][a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'Banks')
+    data.loc[:,col_name] = emp_title(data, pattern, 'Banks')
 
     # AT&T
     pattern = re.compile(r'[a-zA-Z\S\s]*[Aa][Tt][&n][Tt][a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'AT&T')
+    data.loc[:,col_name] = emp_title(data, pattern, 'AT&T')
 
     # Air Force
     pattern = re.compile(r'[a-zA-Z\S\s]*Force[a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'Air Force')
+    data.loc[:,col_name] = emp_title(data, pattern, 'Air Force')
 
     # USPS
     pattern = re.compile(r'^[Uu][a-zA-Z\S\s]*[Pp][Oo][Ss][Tt][Aa][Ll][a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'USPS')
+    data.loc[:,col_name] = emp_title(data, pattern, 'USPS')
 
     # USPS
     pattern = re.compile(r'^[Uu][Ss][Pp][Ss]')
-    data[col_name] = emp_title(data, pattern, 'USPS')
+    data.loc[:,col_name] = emp_title(data, pattern, 'USPS')
 
     # Chase Bank
     pattern = re.compile(r'[a-zA-Z\S\s]*[Cc]hase[a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'J.P. Morgan Chase')
+    data.loc[:,col_name] = emp_title(data, pattern, 'J.P. Morgan Chase')
 
     # IBM
     pattern = re.compile(r'[a-zA-Z\S\s]*[Ii][Bb][Mm][a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'IBM')
+    data.loc[:,col_name] = emp_title(data, pattern, 'IBM')
 
     # University
     pattern = re.compile(r'[a-zA-Z\S\s]*[Uu][Nn][Ii][Vv][Ee][Rr][Ss][Ii][Tt][Yy][a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'University')
+    data.loc[:,col_name] = emp_title(data, pattern, 'University')
 
     # Airlines
     pattern = re.compile(r'[a-zA-Z\S\s]*[Aa]irline[s]*[a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'Airlines')
+    data.loc[:,col_name] = emp_title(data, pattern, 'Airlines')
 
     # The Home Depot
     pattern = re.compile(r'[a-zA-Z\S\s]*[Hh][Oo][Mm][Ee]\s[Dd][Ee][Pp][Oo][Tt][a-zA-Z\S\s]*')
-    data[col_name] = emp_title(data, pattern, 'The Home Depot')
+    data.loc[:,col_name] = emp_title(data, pattern, 'The Home Depot')
 
     # Other
     top_category = ['None', 'Banks', 'University', 'U.S. Army', 'Air Force', 'USPS', 'Airlines', 'Walmart', 'J.P. Morgan Chase', 'IBM', 'U.S. Navy', 'The Home Depot', 'AT&T']
-    data[col_name] = ['Other' if i not in top_category else i for i in data[col_name]] 
+    data.loc[:,col_name] = ['Other' if i not in top_category else i for i in data.loc[:,col_name]] 
     
     return data[col_name]
-
-
 ```
+
+# 4. Notes
 
 
 ```python
 def lambda_nltk_notes(data, col_names):
 
-    data[col_names] = data[col_names].fillna('None')
+    data.loc[:, col_names] = data[col_names].fillna('None')
     stop_words = stopwords.words('english')
     stop_words.append('br/')
     special_char = re.compile(r'[\W]')
@@ -150,41 +134,39 @@ def lambda_nltk_notes(data, col_names):
         word_tokens = word_tokenize(note)
         no_stops = [i for i in word_tokens if i.lower() not in stop_words]
         no_special = [special_char.sub('',i) for i in no_stops if special_char.sub('',i) != '']
-        stem_lemma = " ".join(ps.stem(lemmatizer.lemmatize(i.lower())) for i in no_special)
+#         stem_lemma = " ".join(ps.stem(lemmatizer.lemmatize(i.lower())) for i in no_special)
+        stem_lemma = " ".join(i.lower() for i in no_special)
         sample.append(stem_lemma)
 
     return sample
-    
+
 ```
 
-
-```python
-# Apply Data Preprocessing
-```
+# 5. Data Preprocessing
 
 
 ```python
 def data_preprocessiong(data):
     
     # emp_title - CATEGORICAL
-    data['emp_title'] = data['emp_title'].fillna('None')
-    data['emp_title'] = emp_title_patterns(data, 'emp_title')
+    data.loc[:,'emp_title'] = data['emp_title'].fillna('None')
+    data.loc[:,'emp_title'] = emp_title_patterns(data, 'emp_title')
     
     # emp_length - NUMERICAL
-    data['emp_length'] = [0 if i == 'na' else i for i in data['emp_length']]
-    data['emp_length'] = data['emp_length'].astype(int)
+    data.loc[:,'emp_length'] = [0 if i == 'na' else i for i in data['emp_length']]
+    data.loc[:,'emp_length'] = data['emp_length'].astype(int)
     
     # home_ownership - CATEGORICAL
-    data.drop(data[data['home_ownership']=='NONE'].index, inplace=True)
+    data.drop(data.loc[data['home_ownership']=='NONE', :].index, inplace=True)
     
     # annual_inc - NUMERICAL
-    data['annual_inc'] = data['annual_inc'].fillna(0)
+    data.loc[:,'annual_inc'] = data['annual_inc'].fillna(0)
     
     # verification_status - CATEGORICAL
     
     # Notes - TEXT
-    data['Notes'] = lambda_nltk_notes(data, 'Notes')
-    data['Notes'] = data['Notes'].astype(str)
+    data.loc[:,'Notes'] = lambda_nltk_notes(data, 'Notes')
+    data.loc[:,'Notes'] = data['Notes'].astype(str)
     
     # purpose_cat - CATEGORICAL
     purpose_df = pd.DataFrame(data['purpose_cat'].value_counts())
@@ -197,11 +179,11 @@ def data_preprocessiong(data):
     # debt_to_income - NUMERICAL
     
     # delinq_2yrs - NUMERICAL
-    data['delinq_2yrs'] = data['delinq_2yrs'].fillna(0.0)
+    data.loc[:,'delinq_2yrs'] = data['delinq_2yrs'].fillna(0.0)
     
     # earliest_cr_line - CATEGORICAL
-    data['quarter'] = [str(i.quarter) for i in pd.to_datetime(data['earliest_cr_line'])]
-    data['year'] = [str(i.year) for i in pd.to_datetime(data['earliest_cr_line'])]
+    data.loc[:,'quarter'] = [str(i.quarter) for i in pd.to_datetime(data['earliest_cr_line'])]
+    data.loc[:,'year'] = [str(i.year) for i in pd.to_datetime(data['earliest_cr_line'])]
     
     #### replace less frequent with 'Other' 
     cr_line_df = pd.DataFrame(data['year'].value_counts())
@@ -210,27 +192,27 @@ def data_preprocessiong(data):
     data.loc[:,'year'] = [i if i not in other_years else 'other' for i in data['year']]
 
     # inq_last_6mths - NUMERICAL
-    data['inq_last_6mths'] = data['inq_last_6mths'].fillna(0)
+    data.loc[:,'inq_last_6mths'] = data['inq_last_6mths'].fillna(0)
     
     # mths_since_last_delinq - NUMERICAL
-    data['mths_since_last_delinq'] = data['mths_since_last_delinq'].fillna(0)
+    data.loc[:,'mths_since_last_delinq'] = data['mths_since_last_delinq'].fillna(0)
     
     # mths_since_last_record - NUMERICAL
-    data['mths_since_last_record'] = data['mths_since_last_record'].fillna(0)
+    data.loc[:,'mths_since_last_record'] = data['mths_since_last_record'].fillna(0)
     
     # open_acc - NUMERICAL
-    data['open_acc'] = data['open_acc'].fillna(data['open_acc'].mean())
+    data.loc[:,'open_acc'] = data['open_acc'].fillna(data['open_acc'].mean())
     
     # pub_rec - NUMERICAL
-    data['pub_rec'] = data['pub_rec'].fillna(0.0)
+    data.loc[:,'pub_rec'] = data['pub_rec'].fillna(0.0)
     
     # revol_bal - NUMERICAL
     
     # revol_util - NUMERICAL
-    data['revol_util'] = data['revol_util'].fillna(data['revol_util'].mean())
+    data.loc[:,'revol_util'] = data['revol_util'].fillna(data['revol_util'].mean())
     
     # total_acc - NUMERICAL
-    data['total_acc'] = data['total_acc'].fillna(data['total_acc'].mean())
+    data.loc[:,'total_acc'] = data['total_acc'].fillna(data['total_acc'].mean())
     
     # mths_since_last_major_derog - NUMERICAL
     
@@ -242,13 +224,15 @@ def data_preprocessiong(data):
     return data
 ```
 
+# 6. Train-Eval-Test Split
+
 
 ```python
 X = df.loc[:,~df.columns.isin(['is_bad'])].copy()
 y = df['is_bad']
 
 X, X_test, y, y_test = train_test_split(X, y,
-                                        test_size=0.20,
+                                        test_size=0.10,
                                         random_state=1,
                                         stratify=y)
 
@@ -265,8 +249,8 @@ print(X_train.shape, X_val.shape, X_test.shape)
 print(y_train.shape, y_val.shape, y_test.shape)
 ```
 
-    (6400, 27) (1600, 27) (2000, 27)
-    (6400,) (1600,) (2000,)
+    (7200, 27) (1800, 27) (1000, 27)
+    (7200,) (1800,) (1000,)
 
 
 
@@ -274,186 +258,18 @@ print(y_train.shape, y_val.shape, y_test.shape)
 y_train.drop(X_train[X_train['home_ownership']=='NONE'].index[0], inplace=True)
 ```
 
-
-```python
-X_train = data_preprocessiong(X_train)
-X_val = data_preprocessiong(X_val)
-X_test = data_preprocessiong(X_test)
-```
-
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:4: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      after removing the cwd from sys.path.
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:23: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:27: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:31: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:35: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:39: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:43: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:47: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:51: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:55: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:59: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:63: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:67: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:71: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:75: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:5: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      """
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:8: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:9: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      if __name__ == '__main__':
-    /opt/anaconda3/lib/python3.7/site-packages/pandas/core/frame.py:3997: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      errors=errors,
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:15: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      from ipykernel import kernelapp as app
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:3: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      This is separate from the ipykernel package so we can avoid doing imports until
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:20: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:21: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/pandas/core/indexing.py:965: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      self.obj[item] = s
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:34: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:37: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:38: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:50: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:53: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:56: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-    /opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:64: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame.
-    Try using .loc[row_indexer,col_indexer] = value instead
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-
+# 7. Apply Data Preprocessing
 
 
 ```python
-# Column Transformation
+X_train = data_preprocessiong(X_train.copy())
+X_val = data_preprocessiong(X_val.copy())
+X_test = data_preprocessiong(X_test.copy())
 ```
 
+# 8. Column Transformations
 
-```python
-# Training Set
-```
+### 8.1 Training Set
 
 
 ```python
@@ -493,10 +309,14 @@ cat_x_train = ohe.fit_transform(X_train[['emp_title', 'home_ownership', 'verific
                                          'purpose_cat', 'addr_state', 'policy_code', 'quarter', 'year']])
 
 mmscaler = MinMaxScaler(feature_range=(0,1))
-num_x_train = mmscaler.fit_transform(X_train[['emp_length', 'annual_inc', 'debt_to_income', 'delinq_2yrs',
-                                'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
-                                'revol_util', 'total_acc', 'mths_since_last_major_derog', 
-                                'mths_since_last_record', 'mths_since_last_delinq']])
+num_x_train = mmscaler.fit_transform(X_train[['emp_length', 'annual_inc',
+                                              'debt_to_income', 'delinq_2yrs',
+                                              'inq_last_6mths', 'open_acc', 
+                                              'pub_rec', 'revol_bal', 
+                                              'revol_util', 'total_acc', 
+                                              'mths_since_last_major_derog', 
+                                              'mths_since_last_record', 
+                                              'mths_since_last_delinq']])
 
 tf = TfidfVectorizer(min_df=1, stop_words='english', lowercase=True)
 text_x_train = tf.fit_transform(X_train['Notes']).toarray()
@@ -506,8 +326,17 @@ X_train = np.concatenate((cat_x_train, num_x_train, text_x_train), axis=1)
 
 
 ```python
-# Eval Set
+print(X_train.shape)
+print(X_train.shape[1]*0.5)
+print(X_train.shape[0]*0.9)
 ```
+
+    (7199, 13681)
+    6840.5
+    6839.049999999999
+
+
+### 8.2 Eval Set
 
 
 ```python
@@ -515,9 +344,9 @@ cat_x_val = ohe.transform(X_val[['emp_title', 'home_ownership', 'verification_st
                                  'purpose_cat', 'addr_state', 'policy_code', 'quarter', 'year']])
 
 num_x_val = mmscaler.transform(X_val[['emp_length', 'annual_inc', 'debt_to_income', 'delinq_2yrs',
-                                'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
-                                'revol_util', 'total_acc', 'mths_since_last_major_derog', 
-                                'mths_since_last_record', 'mths_since_last_delinq']])
+                                      'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
+                                      'revol_util', 'total_acc', 'mths_since_last_major_derog', 
+                                      'mths_since_last_record', 'mths_since_last_delinq']])
 
 text_x_val = tf.transform(X_val['Notes']).toarray()
 
@@ -528,14 +357,11 @@ X_val.shape
 
 
 
-    (1600, 9885)
+    (1800, 13681)
 
 
 
-
-```python
-# Test Set
-```
+### 8.3 Test Set
 
 
 ```python
@@ -543,9 +369,9 @@ cat_x_test = ohe.transform(X_test[['emp_title', 'home_ownership', 'verification_
                                    'purpose_cat', 'addr_state', 'policy_code', 'quarter', 'year']])
 
 num_x_test = mmscaler.transform(X_test[['emp_length', 'annual_inc', 'debt_to_income', 'delinq_2yrs',
-                                'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
-                                'revol_util', 'total_acc', 'mths_since_last_major_derog', 
-                                'mths_since_last_record', 'mths_since_last_delinq']])
+                                        'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
+                                        'revol_util', 'total_acc', 'mths_since_last_major_derog', 
+                                        'mths_since_last_record', 'mths_since_last_delinq']])
 
 text_x_test = tf.transform(X_test['Notes']).toarray()
 
@@ -556,17 +382,70 @@ X_test.shape
 
 
 
-    (2000, 9885)
+    (1000, 13681)
 
 
+
+# 9. Train Model
+
+## GridSearchCV
 
 
 ```python
-print(X_train.shape, y_train.shape)
+# # ROUND 1
+param_grid = {
+    'max_depth': [3, 5, 10],
+    'learning_rate': [0.7, 0.1, 0.05],
+    'gamma': [10.0, 25.0, 100.0],
+    'reg_lambda': [150.0, 100.0, 10.0],
+    'scale_pos_weight': [6, 9, 11]
+}
+
+# {'gamma': 10.0, 'learning_rate': 0.05, 'max_depth': 5, 
+#  'reg_lambda': 10.0, 'scale_pos_weight': 3}
+
+# ROUND 2
+# param_grid = {
+#     'max_depth': [4],
+#     'learning_rate': [0.5, 0.3, 0.1],
+#     'gamma': [1.0, 10.0, 50.0],
+#     'reg_lambda': [10.0, 50.0, 100.0],
+#     'scale_pos_weight': [3]
+# }
+    
+# # ROUND 3
+# param_grid = {
+#     'max_depth': [4],
+#     'learning_rate': [0.1],
+#     'gamma': [0],
+#     'reg_lambda': [1.0],
+#     'scale_pos_weight': [3]
+# }
+
+# # Training model with XGBoost
+# classifier = XGBClassifier(objective='binary:logistic', 
+#                            use_label_encoder=False,
+#                            subsample=0.95,
+#                            colsample_bytree=0.95,
+#                            seed=10)
+
+# optimal_params = GridSearchCV(
+#     estimator = classifier,
+#     param_grid = param_grid,
+#     scoring='precision',
+#     verbose=0,
+#     n_jobs=1,
+#     cv=3
+# )
+
+# optimal_params.fit(X_train, y_train)
+# best_accuracy = optimal_params.best_score_
+# best_parameters = optimal_params.best_params_
+# print("Best Accuracy: {:.2f} %".format(best_accuracy*100))
+# print("Best Parameters: ", best_parameters)
 ```
 
-    (6399, 9885) (6399,)
-
+## 9.1 XGBoost
 
 
 ```python
@@ -577,17 +456,22 @@ optimized_classifier = XGBClassifier(objective='binary:logistic',
                                      reg_lambda=100.0,
                                      scale_pos_weight=7,
                                      use_label_encoder=False,
-                                     subsample=0.95,
+                                     subsample=0.9,
                                      colsample_bytree=0.5,
                                      seed=10)
 
 model = optimized_classifier.fit(X_train,
                                  y_train,
                                  early_stopping_rounds=10,
-                                 verbose=True,
+                                 verbose=False,
                                  eval_metric='aucpr',
                                  eval_set=[(X_train, y_train), (X_val, y_val)])
+```
 
+### 9.1.1 Confusion Matrix
+
+
+```python
 plot_confusion_matrix(optimized_classifier,
                       X_val,
                       y_val,
@@ -604,102 +488,22 @@ plot_confusion_matrix(optimized_classifier,
 
 ```
 
-    [0]	validation_0-aucpr:0.18182	validation_1-aucpr:0.14960
-    [1]	validation_0-aucpr:0.21049	validation_1-aucpr:0.15041
-    [2]	validation_0-aucpr:0.22096	validation_1-aucpr:0.15675
-    [3]	validation_0-aucpr:0.29287	validation_1-aucpr:0.17825
-    [4]	validation_0-aucpr:0.29859	validation_1-aucpr:0.17883
-    [5]	validation_0-aucpr:0.32106	validation_1-aucpr:0.18272
-    [6]	validation_0-aucpr:0.32411	validation_1-aucpr:0.18416
-    [7]	validation_0-aucpr:0.33225	validation_1-aucpr:0.18440
-    [8]	validation_0-aucpr:0.33382	validation_1-aucpr:0.18623
-    [9]	validation_0-aucpr:0.33042	validation_1-aucpr:0.18630
-    [10]	validation_0-aucpr:0.33615	validation_1-aucpr:0.18684
-    [11]	validation_0-aucpr:0.33944	validation_1-aucpr:0.18718
-    [12]	validation_0-aucpr:0.33965	validation_1-aucpr:0.18697
-    [13]	validation_0-aucpr:0.34309	validation_1-aucpr:0.18909
-    [14]	validation_0-aucpr:0.34513	validation_1-aucpr:0.18924
-    [15]	validation_0-aucpr:0.34497	validation_1-aucpr:0.18955
-    [16]	validation_0-aucpr:0.34883	validation_1-aucpr:0.19124
-    [17]	validation_0-aucpr:0.35283	validation_1-aucpr:0.19129
-    [18]	validation_0-aucpr:0.35310	validation_1-aucpr:0.19087
-    [19]	validation_0-aucpr:0.35493	validation_1-aucpr:0.19035
-    [20]	validation_0-aucpr:0.35441	validation_1-aucpr:0.19010
-    [21]	validation_0-aucpr:0.35542	validation_1-aucpr:0.19131
-    [22]	validation_0-aucpr:0.35493	validation_1-aucpr:0.19076
-    [23]	validation_0-aucpr:0.35707	validation_1-aucpr:0.19095
-    [24]	validation_0-aucpr:0.35872	validation_1-aucpr:0.19118
-    [25]	validation_0-aucpr:0.35763	validation_1-aucpr:0.19082
-    [26]	validation_0-aucpr:0.35799	validation_1-aucpr:0.19166
-    [27]	validation_0-aucpr:0.36100	validation_1-aucpr:0.19265
-    [28]	validation_0-aucpr:0.36206	validation_1-aucpr:0.19397
-    [29]	validation_0-aucpr:0.36239	validation_1-aucpr:0.19410
-    [30]	validation_0-aucpr:0.36430	validation_1-aucpr:0.19580
-    [31]	validation_0-aucpr:0.36564	validation_1-aucpr:0.19682
-    [32]	validation_0-aucpr:0.36608	validation_1-aucpr:0.19694
-    [33]	validation_0-aucpr:0.36790	validation_1-aucpr:0.19722
-    [34]	validation_0-aucpr:0.36926	validation_1-aucpr:0.19713
-    [35]	validation_0-aucpr:0.36953	validation_1-aucpr:0.19750
-    [36]	validation_0-aucpr:0.36949	validation_1-aucpr:0.19741
-    [37]	validation_0-aucpr:0.36951	validation_1-aucpr:0.19803
-    [38]	validation_0-aucpr:0.37131	validation_1-aucpr:0.19892
-    [39]	validation_0-aucpr:0.37080	validation_1-aucpr:0.19897
-    [40]	validation_0-aucpr:0.37407	validation_1-aucpr:0.19837
-    [41]	validation_0-aucpr:0.37713	validation_1-aucpr:0.19967
-    [42]	validation_0-aucpr:0.37783	validation_1-aucpr:0.19925
-    [43]	validation_0-aucpr:0.37912	validation_1-aucpr:0.20043
-    [44]	validation_0-aucpr:0.37967	validation_1-aucpr:0.20096
-    [45]	validation_0-aucpr:0.38166	validation_1-aucpr:0.20083
-    [46]	validation_0-aucpr:0.38253	validation_1-aucpr:0.20133
-    [47]	validation_0-aucpr:0.38222	validation_1-aucpr:0.20134
-    [48]	validation_0-aucpr:0.38504	validation_1-aucpr:0.20196
-    [49]	validation_0-aucpr:0.38620	validation_1-aucpr:0.20031
-    [50]	validation_0-aucpr:0.38675	validation_1-aucpr:0.20172
-    [51]	validation_0-aucpr:0.38718	validation_1-aucpr:0.20230
-    [52]	validation_0-aucpr:0.38860	validation_1-aucpr:0.20254
-    [53]	validation_0-aucpr:0.39052	validation_1-aucpr:0.20446
-    [54]	validation_0-aucpr:0.39167	validation_1-aucpr:0.20551
-    [55]	validation_0-aucpr:0.39450	validation_1-aucpr:0.20646
-    [56]	validation_0-aucpr:0.39664	validation_1-aucpr:0.20563
-    [57]	validation_0-aucpr:0.39746	validation_1-aucpr:0.20654
-    [58]	validation_0-aucpr:0.39959	validation_1-aucpr:0.20968
-    [59]	validation_0-aucpr:0.40086	validation_1-aucpr:0.20975
-    [60]	validation_0-aucpr:0.40271	validation_1-aucpr:0.21119
-    [61]	validation_0-aucpr:0.40427	validation_1-aucpr:0.21194
-    [62]	validation_0-aucpr:0.40406	validation_1-aucpr:0.21209
-    [63]	validation_0-aucpr:0.40613	validation_1-aucpr:0.21271
-    [64]	validation_0-aucpr:0.40708	validation_1-aucpr:0.21155
-    [65]	validation_0-aucpr:0.40851	validation_1-aucpr:0.21164
-    [66]	validation_0-aucpr:0.40804	validation_1-aucpr:0.21136
-    [67]	validation_0-aucpr:0.40886	validation_1-aucpr:0.21154
-    [68]	validation_0-aucpr:0.41174	validation_1-aucpr:0.21312
-    [69]	validation_0-aucpr:0.41227	validation_1-aucpr:0.21345
-    [70]	validation_0-aucpr:0.41242	validation_1-aucpr:0.21265
-    [71]	validation_0-aucpr:0.41388	validation_1-aucpr:0.21303
-    [72]	validation_0-aucpr:0.41455	validation_1-aucpr:0.21277
-    [73]	validation_0-aucpr:0.41487	validation_1-aucpr:0.21283
-    [74]	validation_0-aucpr:0.41686	validation_1-aucpr:0.21164
-    [75]	validation_0-aucpr:0.41865	validation_1-aucpr:0.21202
-    [76]	validation_0-aucpr:0.41875	validation_1-aucpr:0.21213
-    [77]	validation_0-aucpr:0.42018	validation_1-aucpr:0.21204
-    [78]	validation_0-aucpr:0.42170	validation_1-aucpr:0.21185
-    [79]	validation_0-aucpr:0.42114	validation_1-aucpr:0.21197
+
+
+
+    <sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x7f971f7153d0>
 
 
 
 
-
-    <sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x7fd7b50db110>
-
+![png](output_32_1.png)
 
 
 
-![png](output_22_2.png)
+![png](output_32_2.png)
 
 
-
-![png](output_22_3.png)
-
+### 9.1.2 Model Evaluation
 
 
 ```python
@@ -734,35 +538,395 @@ print('\nSpecificity: ', cm[0, 0]/(cm[0, 0]+cm[0, 1]))
     Validation Set Metrics: 
     -----------------------
     Confusion matrix: 
-     [[875 518]
-     [ 79 128]]
+     [[945 622]
+     [ 81 152]]
     
-    F1 Score:  0.30011723329425555
+    F1 Score:  0.3018867924528302
     
-    Precision:  0.19814241486068113
+    Precision:  0.19638242894056848
     
-    Accuracy:  0.626875
+    Accuracy:  0.6094444444444445
     
-    Recall/Sensitivity:  0.6183574879227053
+    Recall/Sensitivity:  0.6523605150214592
     
-    Specificity:  0.628140703517588
+    Specificity:  0.603063178047224
     
     
     Test Set Metrics: 
     -----------------
     Confusion matrix: 
-     [[1122  619]
-     [ 101  158]]
+     [[443 427]
+     [ 33  97]]
     
-    F1 Score:  0.305019305019305
+    F1 Score:  0.2966360856269113
     
-    Precision:  0.20334620334620335
+    Precision:  0.1851145038167939
     
-    Accuracy:  0.64
+    Accuracy:  0.54
     
-    Recall/Sensitivity:  0.61003861003861
+    Recall/Sensitivity:  0.7461538461538462
     
-    Specificity:  0.6444572085008615
+    Specificity:  0.5091954022988506
+
+
+### 9.1.3 Get important features
+
+
+```python
+importance = optimized_classifier.feature_importances_
+
+feature_index = []
+feature_importance = []
+for i, j in enumerate(importance):
+    if j > 0.01:
+        feature_index.append(i)
+        feature_importance.append(j)
+    pass
+
+print('Important feature index: \n', feature_index)
+print('\nFeature importance: \n', feature_importance)
+print('\nCount important features: ', len(feature_index))
+```
+
+    Important feature index: 
+     [14, 18, 20, 22, 23, 29, 30, 81, 88, 112, 113, 114, 116, 117, 118, 119, 120, 121, 122, 124, 3126, 3768, 3772, 3978, 4093, 4254, 4365, 4372, 4814, 4815, 4994, 5242, 5330, 5428, 7207, 7411, 7738, 8462, 8533, 8594, 9288, 9746, 9849, 10061, 10628, 13486, 13585]
+    
+    Feature importance: 
+     [0.03429754, 0.019855445, 0.04070201, 0.023521654, 0.01664729, 0.0846398, 0.034840718, 0.014346519, 0.023831442, 0.022244938, 0.027674628, 0.01115937, 0.03070144, 0.010299051, 0.018013962, 0.0113903005, 0.030929357, 0.031028666, 0.016560202, 0.013118965, 0.025010413, 0.01917958, 0.011628756, 0.02510282, 0.021957703, 0.012395857, 0.013324406, 0.017906772, 0.013432614, 0.013650235, 0.01208392, 0.025040107, 0.010096529, 0.019029973, 0.013965997, 0.014468129, 0.011640513, 0.012151863, 0.018071862, 0.012030942, 0.018528523, 0.010266216, 0.017075242, 0.01182169, 0.02110908, 0.016973572, 0.013651711]
+    
+    Count important features:  47
+
+
+
+```python
+print('Categorical Features: ', cat_x_train.shape[1])
+print('Numerical Features: ', num_x_train.shape[1])
+print('Text Features: ', text_x_train.shape[1])
+```
+
+    Categorical Features:  112
+    Numerical Features:  13
+    Text Features:  13556
+
+
+
+```python
+# Index of text and categorical features
+# text_feature = [2926, 3573, 3658, 3730, 3953, 4115, 4260, 4324, 4392, 4977, 5480, 5698, 6423, 6471, 6829, 6957, 7348, 7362, 8257, 8701, 9017, 9574, 9733]
+# numerical_features = [ 112, 113, 114, 115, 116, 117, 119, 120, 121, 122, 124]
+# categorical_feature = [6, 7, 18, 20, 21, 22, 23, 29, 30, 36, 41, 72, 81, 82, 88, 109]
+
+```
+
+
+```python
+# Index of text and categorical features - Without Lemmatizer
+# text_feature = [2926, 3574, 3661, 3733, 4263, 4395, 5503, 5707, 6072, 6174, 6431, 6478, 6966, 8266, 8714, 9148, 9433, 9745]
+# numerical_features = [113, 114, 115, 116, 119, 120, 121, 122, 123, 124]
+# categorical_feature = [18, 20, 22, 29, 30, 36, 63, 72, 82, 88]
+
+```
+
+
+```python
+# Index of text and categorical features - Without Stemming
+text_feature = [3126, 3768, 3772, 3978, 4093, 4254, 4365, 4372, 4814, 4815, 4994, 5242, 5330, 5428, 7207, 7411, 7738, 8462, 8533, 8594, 9288, 9746, 9849, 10061, 10628, 13486, 13585]
+numerical_features = [112, 113, 114, 116, 117, 118, 119, 120, 121, 122, 124]
+categorical_feature = [14, 18, 20, 22, 23, 29, 30, 81, 88]
+
+```
+
+### 9.1.4 Get Important Feature Names
+
+
+```python
+# Important categorical feature names
+cat_feature_names = ohe.get_feature_names(['emp_title', 'home_ownership', 
+                                           'verification_status', 
+                                           'purpose_cat', 'addr_state', 
+                                           'policy_code', 'quarter', 
+                                           'year'])
+
+imp_categorical_features = []
+for i, j in enumerate(cat_feature_names):
+    if i in categorical_feature:
+        imp_categorical_features.append(j)
+
+print('Important categorical feature: \n')
+imp_categorical_features
+```
+
+    Important categorical feature: 
+    
+
+
+
+
+
+    ['home_ownership_MORTGAGE',
+     'verification_status_VERIFIED - income',
+     'verification_status_not verified',
+     'purpose_cat_credit card',
+     'purpose_cat_debt consolidation',
+     'purpose_cat_other small business',
+     'purpose_cat_small business',
+     'policy_code_PC2',
+     'quarter_4']
+
+
+
+
+```python
+# Important text feature name
+feature_name = tf.get_feature_names()
+
+imp_text_features = []
+for i, j in enumerate(feature_name):
+    if i+125 in text_feature:
+        imp_text_features.append('word_'+j)
+
+print('Important word features: \n')
+imp_text_features
+        
+```
+
+    Important word features: 
+    
+
+
+
+
+
+    ['word_added',
+     'word_balance',
+     'word_balances',
+     'word_bills',
+     'word_borrower',
+     'word_business',
+     'word_card',
+     'word_cards',
+     'word_companies',
+     'word_company',
+     'word_consolidate',
+     'word_credit',
+     'word_currently',
+     'word_debt',
+     'word_great',
+     'word_help',
+     'word_income',
+     'word_like',
+     'word_loan',
+     'word_looking',
+     'word_need',
+     'word_paid',
+     'word_pay',
+     'word_plan',
+     'word_rate',
+     'word_work',
+     'word_year']
+
+
+
+
+```python
+# Important numerical feature name
+num_features = ['emp_length', 'annual_inc', 'debt_to_income', 
+                'delinq_2yrs','inq_last_6mths', 'open_acc', 
+                'pub_rec', 'revol_bal', 'revol_util', 'total_acc', 
+                'mths_since_last_major_derog', 'mths_since_last_record', 
+                'mths_since_last_delinq']
+
+imp_numerical_features = []
+for i, j in enumerate(num_features):
+    if i+112 in numerical_features:
+        imp_numerical_features.append(j)
+       
+print('Important numerical features: \n')
+imp_numerical_features
+```
+
+    Important numerical features: 
+    
+
+
+
+
+
+    ['emp_length',
+     'annual_inc',
+     'debt_to_income',
+     'inq_last_6mths',
+     'open_acc',
+     'pub_rec',
+     'revol_bal',
+     'revol_util',
+     'total_acc',
+     'mths_since_last_major_derog',
+     'mths_since_last_delinq']
+
+
+
+### 9.1.5 Visualize important features
+
+
+```python
+feature_names = imp_categorical_features + imp_numerical_features + imp_text_features
+
+feature_dat = {'Index': feature_index, 
+               'Feature_Name': feature_names, 
+               'Feature_imp': feature_importance}
+
+feature_imp_df = pd.DataFrame(feature_dat)
+feature_imp_df = feature_imp_df.sort_values('Feature_imp', ascending=True)
+```
+
+
+```python
+fig, ax = plt.subplots()
+fig.set_figheight(50)
+fig.set_figwidth(50)
+plt.title('Feature Importance', fontsize=100)
+plt.barh(feature_imp_df['Feature_Name'], feature_imp_df['Feature_imp'],
+         color='red')
+plt.xticks(fontsize=50)
+plt.yticks(fontsize=50)
+plt.xlabel("Feature importance", fontsize=70)
+plt.ylabel("Features", fontsize=70)
+plt.show()
+```
+
+
+![png](output_47_0.png)
+
+
+
+```python
+X_train = X_train[:,feature_index]
+X_val = X_val[:,feature_index]
+X_test = X_test[:,feature_index]
+```
+
+## 9.2 Random Forest
+
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+rfc = RandomForestClassifier(n_estimators=100, 
+                             criterion='gini',
+                             class_weight={0:1,1:7},
+                             max_depth=10,
+                             random_state=10)
+
+rfc.fit(X_train, y_train)
+```
+
+
+
+
+    RandomForestClassifier(class_weight={0: 1, 1: 7}, max_depth=10, random_state=10)
+
+
+
+### 9.2.1 Confusion Matrix
+
+
+```python
+plot_confusion_matrix(rfc,
+                      X_val,
+                      y_val,
+                      values_format='d',
+                      display_labels=["No Default",
+                                      "Default"])
+
+plot_confusion_matrix(rfc,
+                      X_test,
+                      y_test,
+                      values_format='d',
+                      display_labels=["No Default",
+                                      "Default"])
+
+```
+
+
+
+
+    <sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x7f95f476fb50>
+
+
+
+
+![png](output_52_1.png)
+
+
+
+![png](output_52_2.png)
+
+
+### 9.2.2 Model Evaluation
+
+
+```python
+# Model evaluation - Test-Validation Set
+print('Validation Set Metrics: ')
+print('-----------------------')
+y_pred_val = rfc.predict(X_val)
+cm = confusion_matrix(y_val, y_pred_val)
+accuracy = accuracy_score(y_val, y_pred_val)
+print('Confusion matrix: \n', cm)
+print('\nF1 Score: ', 2*cm[1, 1]/(2*cm[1, 1]+cm[0, 1]+cm[1, 0]))
+print('\nPrecision: ', cm[1, 1]/(cm[1, 1]+cm[0, 1]))
+print('\nAccuracy: ', accuracy)
+print('\nRecall/Sensitivity: ', cm[1, 1]/(cm[1, 1]+cm[1, 0]))
+print('\nSpecificity: ', cm[0, 0]/(cm[0, 0]+cm[0, 1]))
+
+print('\n')
+print('Test Set Metrics: ')
+print('-----------------')
+y_pred_test = rfc.predict(X_test)
+cm = confusion_matrix(y_test, y_pred_test)
+accuracy = accuracy_score(y_test, y_pred_test)
+print('Confusion matrix: \n', cm)
+print('\nF1 Score: ', 2*cm[1, 1]/(2*cm[1, 1]+cm[0, 1]+cm[1, 0]))
+print('\nPrecision: ', cm[1, 1]/(cm[1, 1]+cm[0, 1]))
+print('\nAccuracy: ', accuracy)
+print('\nRecall/Sensitivity: ', cm[1, 1]/(cm[1, 1]+cm[1, 0]))
+print('\nSpecificity: ', cm[0, 0]/(cm[0, 0]+cm[0, 1]))
+
+```
+
+    Validation Set Metrics: 
+    -----------------------
+    Confusion matrix: 
+     [[1074  493]
+     [ 115  118]]
+    
+    F1 Score:  0.2796208530805687
+    
+    Precision:  0.19312602291325695
+    
+    Accuracy:  0.6622222222222223
+    
+    Recall/Sensitivity:  0.5064377682403434
+    
+    Specificity:  0.6853860880663688
+    
+    
+    Test Set Metrics: 
+    -----------------
+    Confusion matrix: 
+     [[518 352]
+     [ 48  82]]
+    
+    F1 Score:  0.2907801418439716
+    
+    Precision:  0.1889400921658986
+    
+    Accuracy:  0.6
+    
+    Recall/Sensitivity:  0.6307692307692307
+    
+    Specificity:  0.5954022988505747
 
 
 
