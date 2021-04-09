@@ -796,7 +796,7 @@ plt.show()
 ```
 
 
-![png](plots/output_47_0.png)
+![png](plots/feature_imp.png)
 
 
 
