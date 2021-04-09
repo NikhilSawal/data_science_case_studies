@@ -41,11 +41,11 @@ df = pd.read_csv('data/dataset.csv')
 ```python
 def emp_title(data, pattern, category_name):
     """
-    Find patterns and return a list with the common category name for 
-    different patterns. For eg: If 'Walmart' appears in the following 
+    Find patterns and return a list with the common category name for
+    different patterns. For eg: If 'Walmart' appears in the following
     formats ('walmart', 'Wal-Mart', 'Walmart') it will be set to Walmart.
     """
-    unique_names = data['emp_title'].unique() 
+    unique_names = data['emp_title'].unique()
     matches = [pattern.findall(i) for i in unique_names if len(pattern.findall(i)) > 0]
     matches = [item for l in matches for item in l]
     return [category_name if i in matches else i for i in data['emp_title']]
@@ -53,10 +53,10 @@ def emp_title(data, pattern, category_name):
 
 def emp_title_patterns(data, col_name):
     """
-    This function applies manually identified patterns of most common 
+    This function applies manually identified patterns of most common
     employer title and replace the remaining with Others!!
     """
-    
+
     # US Army
     pattern = re.compile(r'[a-zA-Z\S]*^[uU][a-zA-Z\s\S]+[Aa][Rr][Mm][Yy][a-zA-Z\S]*')
     data.loc[:,col_name] = emp_title(data, pattern, 'U.S. Army')
@@ -111,8 +111,8 @@ def emp_title_patterns(data, col_name):
 
     # Other
     top_category = ['None', 'Banks', 'University', 'U.S. Army', 'Air Force', 'USPS', 'Airlines', 'Walmart', 'J.P. Morgan Chase', 'IBM', 'U.S. Navy', 'The Home Depot', 'AT&T']
-    data.loc[:,col_name] = ['Other' if i not in top_category else i for i in data.loc[:,col_name]] 
-    
+    data.loc[:,col_name] = ['Other' if i not in top_category else i for i in data.loc[:,col_name]]
+
     return data[col_name]
 ```
 
@@ -147,80 +147,80 @@ def lambda_nltk_notes(data, col_names):
 
 ```python
 def data_preprocessiong(data):
-    
+
     # emp_title - CATEGORICAL
     data.loc[:,'emp_title'] = data['emp_title'].fillna('None')
     data.loc[:,'emp_title'] = emp_title_patterns(data, 'emp_title')
-    
+
     # emp_length - NUMERICAL
     data.loc[:,'emp_length'] = [0 if i == 'na' else i for i in data['emp_length']]
     data.loc[:,'emp_length'] = data['emp_length'].astype(int)
-    
+
     # home_ownership - CATEGORICAL
     data.drop(data.loc[data['home_ownership']=='NONE', :].index, inplace=True)
-    
+
     # annual_inc - NUMERICAL
     data.loc[:,'annual_inc'] = data['annual_inc'].fillna(0)
-    
+
     # verification_status - CATEGORICAL
-    
+
     # Notes - TEXT
     data.loc[:,'Notes'] = lambda_nltk_notes(data, 'Notes')
     data.loc[:,'Notes'] = data['Notes'].astype(str)
-    
+
     # purpose_cat - CATEGORICAL
     purpose_df = pd.DataFrame(data['purpose_cat'].value_counts())
-    purpose_df.reset_index(inplace=True) 
+    purpose_df.reset_index(inplace=True)
     other_small_business = list(purpose_df.loc[purpose_df['purpose_cat'] < 90, 'index'])
     data.loc[:,'purpose_cat'] = [i if i not in other_small_business else 'other small business' for i in data['purpose_cat']]
-    
+
     # addr_state - CATEGORICAL
-    
+
     # debt_to_income - NUMERICAL
-    
+
     # delinq_2yrs - NUMERICAL
     data.loc[:,'delinq_2yrs'] = data['delinq_2yrs'].fillna(0.0)
-    
+
     # earliest_cr_line - CATEGORICAL
     data.loc[:,'quarter'] = [str(i.quarter) for i in pd.to_datetime(data['earliest_cr_line'])]
     data.loc[:,'year'] = [str(i.year) for i in pd.to_datetime(data['earliest_cr_line'])]
-    
-    #### replace less frequent with 'Other' 
+
+    #### replace less frequent with 'Other'
     cr_line_df = pd.DataFrame(data['year'].value_counts())
-    cr_line_df.reset_index(inplace=True) 
+    cr_line_df.reset_index(inplace=True)
     other_years = list(cr_line_df.loc[cr_line_df['year'] < 90, 'index'])
     data.loc[:,'year'] = [i if i not in other_years else 'other' for i in data['year']]
 
     # inq_last_6mths - NUMERICAL
     data.loc[:,'inq_last_6mths'] = data['inq_last_6mths'].fillna(0)
-    
+
     # mths_since_last_delinq - NUMERICAL
     data.loc[:,'mths_since_last_delinq'] = data['mths_since_last_delinq'].fillna(0)
-    
+
     # mths_since_last_record - NUMERICAL
     data.loc[:,'mths_since_last_record'] = data['mths_since_last_record'].fillna(0)
-    
+
     # open_acc - NUMERICAL
     data.loc[:,'open_acc'] = data['open_acc'].fillna(data['open_acc'].mean())
-    
+
     # pub_rec - NUMERICAL
     data.loc[:,'pub_rec'] = data['pub_rec'].fillna(0.0)
-    
+
     # revol_bal - NUMERICAL
-    
+
     # revol_util - NUMERICAL
     data.loc[:,'revol_util'] = data['revol_util'].fillna(data['revol_util'].mean())
-    
+
     # total_acc - NUMERICAL
     data.loc[:,'total_acc'] = data['total_acc'].fillna(data['total_acc'].mean())
-    
+
     # mths_since_last_major_derog - NUMERICAL
-    
+
     # policy_code - CATEGORICAL
-    
+
     # Drop columns
     data.drop(columns=['Id', 'pymnt_plan', 'purpose', 'initial_list_status', 'collections_12_mths_ex_med', 'earliest_cr_line', 'zip_code'], axis=1, inplace=True)
-    
+
     return data
 ```
 
@@ -304,18 +304,18 @@ df.select_dtypes(include=['int64', 'float64']).columns
 
 
 ```python
-ohe = OneHotEncoder(sparse=False, handle_unknown='ignore') 
-cat_x_train = ohe.fit_transform(X_train[['emp_title', 'home_ownership', 'verification_status', 
+ohe = OneHotEncoder(sparse=False, handle_unknown='ignore')
+cat_x_train = ohe.fit_transform(X_train[['emp_title', 'home_ownership', 'verification_status',
                                          'purpose_cat', 'addr_state', 'policy_code', 'quarter', 'year']])
 
 mmscaler = MinMaxScaler(feature_range=(0,1))
 num_x_train = mmscaler.fit_transform(X_train[['emp_length', 'annual_inc',
                                               'debt_to_income', 'delinq_2yrs',
-                                              'inq_last_6mths', 'open_acc', 
-                                              'pub_rec', 'revol_bal', 
-                                              'revol_util', 'total_acc', 
-                                              'mths_since_last_major_derog', 
-                                              'mths_since_last_record', 
+                                              'inq_last_6mths', 'open_acc',
+                                              'pub_rec', 'revol_bal',
+                                              'revol_util', 'total_acc',
+                                              'mths_since_last_major_derog',
+                                              'mths_since_last_record',
                                               'mths_since_last_delinq']])
 
 tf = TfidfVectorizer(min_df=1, stop_words='english', lowercase=True)
@@ -340,12 +340,12 @@ print(X_train.shape[0]*0.9)
 
 
 ```python
-cat_x_val = ohe.transform(X_val[['emp_title', 'home_ownership', 'verification_status', 
+cat_x_val = ohe.transform(X_val[['emp_title', 'home_ownership', 'verification_status',
                                  'purpose_cat', 'addr_state', 'policy_code', 'quarter', 'year']])
 
 num_x_val = mmscaler.transform(X_val[['emp_length', 'annual_inc', 'debt_to_income', 'delinq_2yrs',
-                                      'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
-                                      'revol_util', 'total_acc', 'mths_since_last_major_derog', 
+                                      'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal',
+                                      'revol_util', 'total_acc', 'mths_since_last_major_derog',
                                       'mths_since_last_record', 'mths_since_last_delinq']])
 
 text_x_val = tf.transform(X_val['Notes']).toarray()
@@ -365,12 +365,12 @@ X_val.shape
 
 
 ```python
-cat_x_test = ohe.transform(X_test[['emp_title', 'home_ownership', 'verification_status', 
+cat_x_test = ohe.transform(X_test[['emp_title', 'home_ownership', 'verification_status',
                                    'purpose_cat', 'addr_state', 'policy_code', 'quarter', 'year']])
 
 num_x_test = mmscaler.transform(X_test[['emp_length', 'annual_inc', 'debt_to_income', 'delinq_2yrs',
-                                        'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal', 
-                                        'revol_util', 'total_acc', 'mths_since_last_major_derog', 
+                                        'inq_last_6mths', 'open_acc', 'pub_rec', 'revol_bal',
+                                        'revol_util', 'total_acc', 'mths_since_last_major_derog',
                                         'mths_since_last_record', 'mths_since_last_delinq']])
 
 text_x_test = tf.transform(X_test['Notes']).toarray()
@@ -401,7 +401,7 @@ param_grid = {
     'scale_pos_weight': [6, 9, 11]
 }
 
-# {'gamma': 10.0, 'learning_rate': 0.05, 'max_depth': 5, 
+# {'gamma': 10.0, 'learning_rate': 0.05, 'max_depth': 5,
 #  'reg_lambda': 10.0, 'scale_pos_weight': 3}
 
 # ROUND 2
@@ -412,7 +412,7 @@ param_grid = {
 #     'reg_lambda': [10.0, 50.0, 100.0],
 #     'scale_pos_weight': [3]
 # }
-    
+
 # # ROUND 3
 # param_grid = {
 #     'max_depth': [4],
@@ -423,7 +423,7 @@ param_grid = {
 # }
 
 # # Training model with XGBoost
-# classifier = XGBClassifier(objective='binary:logistic', 
+# classifier = XGBClassifier(objective='binary:logistic',
 #                            use_label_encoder=False,
 #                            subsample=0.95,
 #                            colsample_bytree=0.95,
@@ -496,11 +496,11 @@ plot_confusion_matrix(optimized_classifier,
 
 
 
-![png](output_32_1.png)
+![png](plots/output_32_1.png)
 
 
 
-![png](output_32_2.png)
+![png](plots/output_32_2.png)
 
 
 ### 9.1.2 Model Evaluation
@@ -535,37 +535,37 @@ print('\nSpecificity: ', cm[0, 0]/(cm[0, 0]+cm[0, 1]))
 
 ```
 
-    Validation Set Metrics: 
+    Validation Set Metrics:
     -----------------------
-    Confusion matrix: 
+    Confusion matrix:
      [[945 622]
      [ 81 152]]
-    
+
     F1 Score:  0.3018867924528302
-    
+
     Precision:  0.19638242894056848
-    
+
     Accuracy:  0.6094444444444445
-    
+
     Recall/Sensitivity:  0.6523605150214592
-    
+
     Specificity:  0.603063178047224
-    
-    
-    Test Set Metrics: 
+
+
+    Test Set Metrics:
     -----------------
-    Confusion matrix: 
+    Confusion matrix:
      [[443 427]
      [ 33  97]]
-    
+
     F1 Score:  0.2966360856269113
-    
+
     Precision:  0.1851145038167939
-    
+
     Accuracy:  0.54
-    
+
     Recall/Sensitivity:  0.7461538461538462
-    
+
     Specificity:  0.5091954022988506
 
 
@@ -588,12 +588,12 @@ print('\nFeature importance: \n', feature_importance)
 print('\nCount important features: ', len(feature_index))
 ```
 
-    Important feature index: 
+    Important feature index:
      [14, 18, 20, 22, 23, 29, 30, 81, 88, 112, 113, 114, 116, 117, 118, 119, 120, 121, 122, 124, 3126, 3768, 3772, 3978, 4093, 4254, 4365, 4372, 4814, 4815, 4994, 5242, 5330, 5428, 7207, 7411, 7738, 8462, 8533, 8594, 9288, 9746, 9849, 10061, 10628, 13486, 13585]
-    
-    Feature importance: 
+
+    Feature importance:
      [0.03429754, 0.019855445, 0.04070201, 0.023521654, 0.01664729, 0.0846398, 0.034840718, 0.014346519, 0.023831442, 0.022244938, 0.027674628, 0.01115937, 0.03070144, 0.010299051, 0.018013962, 0.0113903005, 0.030929357, 0.031028666, 0.016560202, 0.013118965, 0.025010413, 0.01917958, 0.011628756, 0.02510282, 0.021957703, 0.012395857, 0.013324406, 0.017906772, 0.013432614, 0.013650235, 0.01208392, 0.025040107, 0.010096529, 0.019029973, 0.013965997, 0.014468129, 0.011640513, 0.012151863, 0.018071862, 0.012030942, 0.018528523, 0.010266216, 0.017075242, 0.01182169, 0.02110908, 0.016973572, 0.013651711]
-    
+
     Count important features:  47
 
 
@@ -641,10 +641,10 @@ categorical_feature = [14, 18, 20, 22, 23, 29, 30, 81, 88]
 
 ```python
 # Important categorical feature names
-cat_feature_names = ohe.get_feature_names(['emp_title', 'home_ownership', 
-                                           'verification_status', 
-                                           'purpose_cat', 'addr_state', 
-                                           'policy_code', 'quarter', 
+cat_feature_names = ohe.get_feature_names(['emp_title', 'home_ownership',
+                                           'verification_status',
+                                           'purpose_cat', 'addr_state',
+                                           'policy_code', 'quarter',
                                            'year'])
 
 imp_categorical_features = []
@@ -656,8 +656,8 @@ print('Important categorical feature: \n')
 imp_categorical_features
 ```
 
-    Important categorical feature: 
-    
+    Important categorical feature:
+
 
 
 
@@ -687,11 +687,11 @@ for i, j in enumerate(feature_name):
 
 print('Important word features: \n')
 imp_text_features
-        
+
 ```
 
-    Important word features: 
-    
+    Important word features:
+
 
 
 
@@ -730,23 +730,23 @@ imp_text_features
 
 ```python
 # Important numerical feature name
-num_features = ['emp_length', 'annual_inc', 'debt_to_income', 
-                'delinq_2yrs','inq_last_6mths', 'open_acc', 
-                'pub_rec', 'revol_bal', 'revol_util', 'total_acc', 
-                'mths_since_last_major_derog', 'mths_since_last_record', 
+num_features = ['emp_length', 'annual_inc', 'debt_to_income',
+                'delinq_2yrs','inq_last_6mths', 'open_acc',
+                'pub_rec', 'revol_bal', 'revol_util', 'total_acc',
+                'mths_since_last_major_derog', 'mths_since_last_record',
                 'mths_since_last_delinq']
 
 imp_numerical_features = []
 for i, j in enumerate(num_features):
     if i+112 in numerical_features:
         imp_numerical_features.append(j)
-       
+
 print('Important numerical features: \n')
 imp_numerical_features
 ```
 
-    Important numerical features: 
-    
+    Important numerical features:
+
 
 
 
@@ -772,8 +772,8 @@ imp_numerical_features
 ```python
 feature_names = imp_categorical_features + imp_numerical_features + imp_text_features
 
-feature_dat = {'Index': feature_index, 
-               'Feature_Name': feature_names, 
+feature_dat = {'Index': feature_index,
+               'Feature_Name': feature_names,
                'Feature_imp': feature_importance}
 
 feature_imp_df = pd.DataFrame(feature_dat)
@@ -796,7 +796,7 @@ plt.show()
 ```
 
 
-![png](output_47_0.png)
+![png](plots/output_47_0.png)
 
 
 
@@ -812,7 +812,7 @@ X_test = X_test[:,feature_index]
 ```python
 from sklearn.ensemble import RandomForestClassifier
 
-rfc = RandomForestClassifier(n_estimators=100, 
+rfc = RandomForestClassifier(n_estimators=100,
                              criterion='gini',
                              class_weight={0:1,1:7},
                              max_depth=10,
@@ -856,11 +856,11 @@ plot_confusion_matrix(rfc,
 
 
 
-![png](output_52_1.png)
+![png](plots/output_52_1.png)
 
 
 
-![png](output_52_2.png)
+![png](plots/output_52_2.png)
 
 
 ### 9.2.2 Model Evaluation
@@ -895,37 +895,37 @@ print('\nSpecificity: ', cm[0, 0]/(cm[0, 0]+cm[0, 1]))
 
 ```
 
-    Validation Set Metrics: 
+    Validation Set Metrics:
     -----------------------
-    Confusion matrix: 
+    Confusion matrix:
      [[1074  493]
      [ 115  118]]
-    
+
     F1 Score:  0.2796208530805687
-    
+
     Precision:  0.19312602291325695
-    
+
     Accuracy:  0.6622222222222223
-    
+
     Recall/Sensitivity:  0.5064377682403434
-    
+
     Specificity:  0.6853860880663688
-    
-    
-    Test Set Metrics: 
+
+
+    Test Set Metrics:
     -----------------
-    Confusion matrix: 
+    Confusion matrix:
      [[518 352]
      [ 48  82]]
-    
+
     F1 Score:  0.2907801418439716
-    
+
     Precision:  0.1889400921658986
-    
+
     Accuracy:  0.6
-    
+
     Recall/Sensitivity:  0.6307692307692307
-    
+
     Specificity:  0.5954022988505747
 
 
