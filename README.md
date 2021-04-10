@@ -111,6 +111,37 @@ data_dict = pd.read_csv('/datarobot/data/data_dictionary.csv')
 print(data_dict)
 ```
 
+| **Index** | **Column Name**               |	**Type**  | **Description**	                 | **Category** |  
+| --------- | ----------------------------- | ----------- | -------------------------------- | ------------ |
+| 0	        |   addr_state                  | Categorical |	Customer State	                 | Customer     |  
+| 1	        |   annual_inc                  | Numeric     |	Annual Income	                 | Customer     |   
+| 2	        |   collections_12_mths_ex_med  | Numeric	  | (Credit based)                   | Customer     |  
+| 3	        |   debt-to-income              | Numeric     |	Ratio of debt to income          | Loan         |  
+| 4	        |   delinq_2yrs                 | Numeric	  | Any delinquency in last 2 years  | Customer     |
+| 5	        |   earliest_cr_line	        | Date	      | First credit date	             | Customer     |
+| 6	        |   emp_length	                | Numeric	  | Length in current job            | Customer     |
+| 7	        |   emp_title	                | Text	      | Employee Title	                 | Customer     |
+| 8	        |   home_ownership	            | Categorical | Housing Status                   | Customer     |
+| 9	        |   Id	                        | Numeric	  | Sequential number	             | Identifier   |
+| 10        | 	initial_list_status	        | Categorical | Loan status                      | Loan         |
+| 11        | 	inq_last_6mths	            | Numeric	  | Number of inquiries              | Customer     |
+| 12        | 	is_bad	                    | Numeric	  | 1 or 0	                         | Target       |
+| 13        | 	mths_since_last_delinq	    | Numeric	  | Months since last delinquency	 | Customer     |
+| 14        | 	mths_since_last_major_derog	| Numeric	  | (Credit based)	                 | Customer     |
+| 15        | 	mths_since_last_record	    | Numeric	  | Months since last record	     | Customer     |
+| 16        | 	Notes	                    | Text	      | Notes taken by the administrator | Loan         |
+| 17        | 	open_acc                    | Numeric	  | (Credit based)                   | Customer     |
+| 18        | 	pymnt_plan	                | Categorical | Current Payment Plans            | Customer     |
+| 19        | 	policy_code	                | Categorical | Loan type	                     | Loan         |
+| 20        | 	pub_rec	                    | Numeric	  | (Credit based)	                 | Customer     |
+| 21        | 	purpose	                    | Text	      | Purpose for the loan	         | Loan         |
+| 22        | 	purpose_cat	                | Categorical | Purpose category for the loan	 | Loan         |
+| 23        | 	revol_bal	                | Numeric	  | (Credit based)	                 | Customer     |
+| 24        | 	revol_util	                | Numeric	  | (Credit based)	                 | Customer     |
+| 25        | 	total_acc	                | Numeric	  | (Credit based)	                 | Customer     |
+| 26        | 	verification_status	        | Categorical | Income Verified                  | Loan         |
+| 27        | 	zip_code	                | Categorical | Customer zip code                | Customer     |
+
 ### XGBoost
 
 XGBoost model was trained to maximize sensitivity/recall for prediction, because of all the one's that defaulted we want the capacity to predict most of them ~70% or higher prediction accuracy.
