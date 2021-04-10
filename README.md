@@ -153,7 +153,7 @@ For numeric data the missing values were replaced/imputed by the most occurring 
 For categorical data missing values were replaced by "None". If a particular feature had too many categories, they were grouped together into broader categories.
 For eg: emp_title or Employer title feature had names of employers appering in different patterns.
 
-Following are different patterns in which the US Army, the US Navy and Walmart appeared in. These varied appearence were replace with the more common `'U.S. Army', 'U.S. Navy', 'Walmart'`
+Following are different patterns in which the `US Army, the US Navy and Walmart` appeared in. These varied appearence were replace with the more common `'U.S. Army', 'U.S. Navy', 'Walmart'`
 
 >US Army patterns:
  ['U.S. Army', 'US Army', 'US ARMY', 'United States Army', 'us army', 'US Army', 'United States Army', 'US military army', 'united states army', 'U.S. Army', 'united States Army', 'US Army', 'U.S army', 'Us Army', 'U.S Army', 'U. S. Army', 'Us army']
