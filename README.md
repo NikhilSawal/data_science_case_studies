@@ -1,6 +1,12 @@
 # Case Studies
 
-## 1. Airbnb - [Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/airbnb/plots)
+## **Table of contents** <a name="top"></a>
+1. [Airbnb - EDA](#airbnb)
+2. [Buildzoom - Classification](#buildzoom)
+3. [DataRobot - Classification](#datarobot)
+
+## 1. Airbnb <a name="airbnb"></a>
+[Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/airbnb/plots)
 
 ### 1.1 Problem
 The product and operations team at Airbnb wants a detailed analysis of their guest host matching system in an attempt to grow bookings at Rio. The team wants to
@@ -59,7 +65,8 @@ Digging a bit deeper, the following plot shows the time spent in number of hours
 
 ![img_3](plots/airbnb/time_spent_contact_me.png)  
 
-## 2. Buildzoom - [Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/buildzoom)
+## 2. Buildzoom  <a name="buildzoom"></a> - [Top](#top)
+[Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/buildzoom)
 
 
 
@@ -87,3 +94,39 @@ Buildzoom gets data on building permits and wants to build a classifier that can
 ### 2.4 References
 1. StatQuest: [https://www.youtube.com/watch?v=GrJP9FLV3FE&t=2217s](https://www.youtube.com/watch?v=GrJP9FLV3FE&t=2217s)
 2. Data School: [https://www.youtube.com/watch?v=irHhDMbw3xo&t=135s](https://www.youtube.com/watch?v=irHhDMbw3xo&t=135s)
+
+
+## 3. DataRobot  <a name="datarobot"></a> - [Top](#top)
+
+[Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/datarobot)
+
+DataRobot wants to build a classification model to predict if an applicant is going to default on loan or not. Which loan applicants are most profitable and worthy of lending money to?
+
+Following snippet of code shows the data dictionary. `is_bad` is the binary classification variable we want to predict. Based on some EDA the data set is highly imbalanced, so we need to make sure that we are using evaluation metrics that accounts for it.
+
+```python
+import pandas as pd
+
+data_dict = pd.read_csv('/datarobot/data/data_dictionary.csv')
+print(data_dict)
+```
+
+### XGBoost
+
+XGBoost model was trained to maximize sensitivity/recall for prediction, because of all the one's that defaulted we want the capacity to predict most of them ~70% or higher prediction accuracy.
+
+After performing Grid search for hyper-parameter tuning and some amount of manual tuning, we get the following confusion matrix for our validation and test set.
+
+| ![cm](/Users/nikhilsawal/OneDrive/machine_learning/data_science_case_studies/datarobot/plots/validation_set_cm.png) |
+|:--:|
+| *Figure 1: Validation set - Confusion matrix* |
+
+| ![cm](/Users/nikhilsawal/OneDrive/machine_learning/data_science_case_studies/datarobot/plots/test_set_cm.png) |
+|:--:|
+| *Figure 2: Test set - Confusion matrix* |
+
+We also need to figure out the set of features that are predictive of our target variable i.e `is_bad`.
+
+| ![cm](/Users/nikhilsawal/OneDrive/machine_learning/data_science_case_studies/datarobot/plots/feature_imp.png) |
+|:--:|
+| *Figure 3: Feature Importance* |
