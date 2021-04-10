@@ -100,9 +100,12 @@ Buildzoom gets data on building permits and wants to build a classifier that can
 
 [Code Link](https://github.com/NikhilSawal/data_science_case_studies/tree/master/datarobot)
 
+### 3.1 Problem Statement
 DataRobot wants to build a classification model to predict if an applicant is going to default on loan or not. Which loan applicants are most profitable and worthy of lending money to?
 
 Following snippet of code shows the data dictionary. `is_bad` is the binary classification variable we want to predict. Based on some EDA the data set is highly imbalanced, so we need to make sure that we are using evaluation metrics that accounts for it.
+
+### 3.2 Data
 
 ```python
 import pandas as pd
@@ -142,7 +145,39 @@ print(data_dict)
 | 26        | 	verification_status	        | Categorical | Income Verified                  | Loan         |
 | 27        | 	zip_code	                | Categorical | Customer zip code                | Customer     |
 
-### XGBoost
+### 3.3 Feature Engineering
+#### 3.3.1 Numeric Data
+For numeric data the missing values were replaced/imputed by the most occurring value or the `mean()` if the count of missing value was <1% and feature scaling was performed using the `minmaxscaler()` method of `sklearn` library.
+
+#### 3.3.2 Categorical Data
+For categorical data missing values were replaced by "None". If a particular feature had too many categories, they were grouped together into broader categories.
+For eg: emp_title or Employer title feature had names of employers appering in different patterns.
+
+Following are different patterns in which the US Army, the US Navy and Walmart appeared in. These varied appearence were replace with the more common `'U.S. Army', 'U.S. Navy', 'Walmart'`
+
+>US Army patterns:
+ ['U.S. Army', 'US Army', 'US ARMY', 'United States Army', 'us army', 'US Army', 'United States Army', 'US military army', 'united states army', 'U.S. Army', 'united States Army', 'US Army', 'U.S army', 'Us Army', 'U.S Army', 'U. S. Army', 'Us army']
+
+>US Navy patterns:
+ ['US Navy', 'U.S. Navy', 'US Navy', 'US NAVY', 'Us Navy', 'United States Navy']
+
+>Walmart patterns:
+ ['Wal-Mart', 'WAL-MART', 'Walmart', 'WalMart', 'wal-mart', 'walmart']
+
+Some categorical features were biased towards one category 99:1 so they were dropped, because they weren't predictive of `is_bad` the target variable.
+
+Date variable had information dated as early as 1960's. So they were replaced with quarter and year as two separate variables.
+
+#### 3.3.3 Text Data
+For text data i.e. `Notes` in the feature engineering stage, `NLTK` was used to remove stop words and special characters from the notes from potential loan applicants. Stemming and Lemmatizers were applied, but the results with the ML model weren't great so they were skipped.
+
+Further `tfidf_vectorizer(`) from `sklearn` was used to encode text features into numeric one's. Following were the keywords that were more important in categorizing the target variable `is_bad`:
+
+>Important keywords: bills, borrower, business, card, credit, current, currently, help, job, like, loan, need, pay, rate
+
+
+### 3.4 Machine Learning Model
+#### 3.4.1 XGBoost
 
 XGBoost model was trained to maximize sensitivity/recall for prediction, because of all the one's that defaulted we want the capacity to predict most of them ~70% or higher prediction accuracy.
 
