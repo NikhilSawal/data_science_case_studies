@@ -117,16 +117,16 @@ XGBoost model was trained to maximize sensitivity/recall for prediction, because
 
 After performing Grid search for hyper-parameter tuning and some amount of manual tuning, we get the following confusion matrix for our validation and test set.
 
-| ![cm](/Users/nikhilsawal/OneDrive/machine_learning/data_science_case_studies/datarobot/plots/validation_set_cm.png) |
+| ![cm](datarobot/plots/validation_set_cm.png) |
 |:--:|
 | *Figure 1: Validation set - Confusion matrix* |
 
-| ![cm](/Users/nikhilsawal/OneDrive/machine_learning/data_science_case_studies/datarobot/plots/test_set_cm.png) |
+| ![cm](datarobot/plots/test_set_cm.png) |
 |:--:|
 | *Figure 2: Test set - Confusion matrix* |
 
 We also need to figure out the set of features that are predictive of our target variable i.e `is_bad`.
 
-| ![cm](/Users/nikhilsawal/OneDrive/machine_learning/data_science_case_studies/datarobot/plots/feature_imp.png) |
+| ![cm](datarobot/plots/feature_imp.png) |
 |:--:|
 | *Figure 3: Feature Importance* |
