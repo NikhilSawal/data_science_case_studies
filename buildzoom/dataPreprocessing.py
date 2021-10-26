@@ -172,17 +172,21 @@ def data_preprocessing(data):
 def machine_learning_prep(train_x, test_x, test_y):
 
     # Apply data preprocessing
-    X = train_x.loc[:,~train_x.columns.isin(['type'])].copy()
-    y = train_x['type'].apply(lambda x: 1 if x=='ELECTRICAL' else 0)
-    # test_X = test_x.copy()
-    # test_y = test_y
+    train_X = train_x.loc[:,~train_x.columns.isin(['type'])].copy()
+    train_y = train_x['type'].apply(lambda x: 1 if x=='ELECTRICAL' else 0)
+    test_X = test_x.copy()
+    test_y = test_y
 
-    X = data_preprocessing(X)
-    test_x = data_preprocessing(test_x)
+    train_x = data_preprocessing(train_X)
+    test_x = data_preprocessing(test_X)
+
+    colNames = ['description', 'licensetype', 'businessname', 'subtype', 'job_value', 'has_ld']
+    train_x = train_x[colNames]
+    test_x = test_x[colNames]
 
     # Prep training data
-    X = X.values
-    y = y.values
+    X = train_x.values
+    y = train_y.values
     X_test = test_x.iloc[:25148,:].values
     y_test = test_y.values
 
@@ -192,26 +196,48 @@ def machine_learning_prep(train_x, test_x, test_y):
                                                       random_state=1,
                                                       stratify=y)
 
-    print("Make sure stratification works and we have equal split across train-val-test sets")
-    print("Train split: ", y_train.sum()/len(y_train))
-    print("Validation split: ", y_val.sum()/len(y_val))
-    print("Test split: ", y_test.sum()/len(y_test))
-    print("\n")
+    # print("Make sure stratification works and we have equal split across train-val-test sets")
+    # print("Train split: ", y_train.sum()/len(y_train))
+    # print("Validation split: ", y_val.sum()/len(y_val))
+    # print("Test split: ", y_test.sum()/len(y_test))
+    # print("\n")
+
+    # # Transform licensetype, businessname and subtype using OneHotEncoding
+    # column_trans = make_column_transformer((OneHotEncoder(sparse=False, handle_unknown='ignore'), [0, 1, 3]),
+    #                                        remainder='passthrough')
+    #
+    # X_train = column_trans.fit_transform(X_train)
+    # X_val = column_trans.transform(X_val)
+    # X_test = column_trans.transform(X_test)
+    #
+    #
+    # # Transform Description using tf-idf
+    # tf = TfidfVectorizer(min_df=1, stop_words='english', lowercase=False)
+    #
+    # # Sum features to single feature
+    # X_train[:,-3] = tf.fit_transform(X_train[:,-3]).toarray().sum(axis=1)
+    # X_val[:,-3] = tf.transform(X_val[:,-3]).toarray().sum(axis=1)
+    # X_test[:,-3] = tf.transform(X_test[:,-3]).toarray().sum(axis=1)
+
 
     # Transform licensetype, businessname and subtype using OneHotEncoding
-    column_trans = make_column_transformer((OneHotEncoder(sparse=False, handle_unknown='ignore'), [0, 1, 3]),
-                                           remainder='passthrough')
+    ohe = OneHotEncoder(sparse=False, handle_unknown='ignore')
 
-    X_train = column_trans.fit_transform(X_train)
-    X_val = column_trans.transform(X_val)
-    X_test = column_trans.transform(X_test)
+    cat_X_train = ohe.fit_transform(X_train[:,1:4])
+    cat_X_val = ohe.transform(X_val[:,1:4])
+    cat_X_test = ohe.transform(X_test[:,1:4])
 
 
     # Transform Description using tf-idf
     tf = TfidfVectorizer(min_df=1, stop_words='english', lowercase=False)
-    X_train[:,-3] = tf.fit_transform(X_train[:,-3]).toarray().sum(axis=1)
-    X_val[:,-3] = tf.transform(X_val[:,-3]).toarray().sum(axis=1)
-    X_test[:,-3] = tf.transform(X_test[:,-3]).toarray().sum(axis=1)
+    text_X_train = tf.fit_transform(X_train[:,0]).toarray()
+    text_X_val = tf.transform(X_val[:,0]).toarray()
+    text_X_test = tf.transform(X_test[:,0]).toarray()
+
+    # Concatenate all feature transformations
+    X_train = np.concatenate((cat_X_train, text_X_train, X_train[:,4:]), axis=1)
+    X_val = np.concatenate((cat_X_val, text_X_val, X_val[:,4:]), axis=1)
+    X_test = np.concatenate((cat_X_test, text_X_test, X_test[:,4:]), axis=1)
 
     return X_train, y_train, X_test, y_test, X_val, y_val
 
