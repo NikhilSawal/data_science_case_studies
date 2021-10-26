@@ -5,7 +5,7 @@ import timeit
 from statistics import median, mean
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, MinMaxScaler
 from sklearn.compose import make_column_transformer
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix, accuracy_score
@@ -227,17 +227,24 @@ def machine_learning_prep(train_x, test_x, test_y):
     cat_X_val = ohe.transform(X_val[:,1:4])
     cat_X_test = ohe.transform(X_test[:,1:4])
 
-
     # Transform Description using tf-idf
     tf = TfidfVectorizer(min_df=1, stop_words='english', lowercase=False)
+
     text_X_train = tf.fit_transform(X_train[:,0]).toarray()
     text_X_val = tf.transform(X_val[:,0]).toarray()
     text_X_test = tf.transform(X_test[:,0]).toarray()
 
+    # MinMaxScaler on job_value
+    mmscaler = MinMaxScaler(feature_range=(0, 1))
+
+    num_X_train = mmscaler.fit_transform(X_train[:,4:5])
+    num_X_val = mmscaler.transform(X_val[:,4:5])
+    num_X_test = mmscaler.transform(X_test[:,4:5])
+
     # Concatenate all feature transformations
-    X_train = np.concatenate((cat_X_train, text_X_train, X_train[:,4:]), axis=1)
-    X_val = np.concatenate((cat_X_val, text_X_val, X_val[:,4:]), axis=1)
-    X_test = np.concatenate((cat_X_test, text_X_test, X_test[:,4:]), axis=1)
+    X_train = np.concatenate((cat_X_train, text_X_train, num_X_train, X_train[:,5:]), axis=1)
+    X_val = np.concatenate((cat_X_val, text_X_val, num_X_val, X_val[:,5:]), axis=1)
+    X_test = np.concatenate((cat_X_test, text_X_test, num_X_test, X_test[:,5:]), axis=1)
 
     return X_train, y_train, X_test, y_test, X_val, y_val
 
