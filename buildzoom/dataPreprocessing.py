@@ -142,6 +142,8 @@ def data_preprocessing(data):
 
     pattern = get_pattern(data)
     cleaned_license = [clean_license(item, pattern) for item in data['licensetype']]
+    data['has_electric_licence'] = [1 if 'electrical_contractor_license' in i else 0 for i in cleaned_license]
+    data['licence_count'] = [len(i) if 'None' not in i else 0 for i in cleaned_license]
     cleaned_license = ['-'.join(sorted(i)) for i in cleaned_license]
     data.loc[:,'licensetype'] = cleaned_license
 
@@ -180,7 +182,11 @@ def machine_learning_prep(train_x, test_x, test_y):
     train_x = data_preprocessing(train_X)
     test_x = data_preprocessing(test_X)
 
-    colNames = ['description', 'licensetype', 'businessname', 'subtype', 'job_value', 'has_ld']
+    colNames = ['description', 'licensetype', 'businessname', 'subtype', 'license_count', 'job_value', 'has_ld', 'has_electric_licence']
+
+    train_x = train_x.reindex(columns=colNames)
+    test_x = test_x.reindex(columns=colNames)
+
     train_x = train_x[colNames]
     test_x = test_x[colNames]
 
@@ -223,9 +229,9 @@ def machine_learning_prep(train_x, test_x, test_y):
     # Transform licensetype, businessname and subtype using OneHotEncoding
     ohe = OneHotEncoder(sparse=False, handle_unknown='ignore')
 
-    cat_X_train = ohe.fit_transform(X_train[:,1:4])
-    cat_X_val = ohe.transform(X_val[:,1:4])
-    cat_X_test = ohe.transform(X_test[:,1:4])
+    cat_X_train = ohe.fit_transform(X_train[:,1:5])
+    cat_X_val = ohe.transform(X_val[:,1:5])
+    cat_X_test = ohe.transform(X_test[:,1:5])
 
     # Transform Description using tf-idf
     tf = TfidfVectorizer(min_df=1, stop_words='english', lowercase=False)
@@ -237,14 +243,14 @@ def machine_learning_prep(train_x, test_x, test_y):
     # MinMaxScaler on job_value
     mmscaler = MinMaxScaler(feature_range=(0, 1))
 
-    num_X_train = mmscaler.fit_transform(X_train[:,4:5])
-    num_X_val = mmscaler.transform(X_val[:,4:5])
-    num_X_test = mmscaler.transform(X_test[:,4:5])
+    num_X_train = mmscaler.fit_transform(X_train[:,5:6])
+    num_X_val = mmscaler.transform(X_val[:,5:6])
+    num_X_test = mmscaler.transform(X_test[:,5:6])
 
     # Concatenate all feature transformations
-    X_train = np.concatenate((cat_X_train, text_X_train, num_X_train, X_train[:,5:]), axis=1)
-    X_val = np.concatenate((cat_X_val, text_X_val, num_X_val, X_val[:,5:]), axis=1)
-    X_test = np.concatenate((cat_X_test, text_X_test, num_X_test, X_test[:,5:]), axis=1)
+    X_train = np.concatenate((cat_X_train, text_X_train, num_X_train, X_train[:,6:]), axis=1)
+    X_val = np.concatenate((cat_X_val, text_X_val, num_X_val, X_val[:,6:]), axis=1)
+    X_test = np.concatenate((cat_X_test, text_X_test, num_X_test, X_test[:,6:]), axis=1)
 
     return X_train, y_train, X_test, y_test, X_val, y_val
 
